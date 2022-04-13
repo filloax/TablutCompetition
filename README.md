@@ -1,52 +1,19 @@
-# TablutCompetition
-Software for the Tablut Students Competition
+Readme del progetto originale fornito: [qua](./README-base.md)
 
-## Installation on Ubuntu/Debian 
+# Passaggi generali
 
-From console, run these commands to install JDK 8 e ANT:
+Partendo da un certo stato
+1. Ricevi mossa dell'avversario dal server e aggiorni stato interno.
+2. **Creazione albero** degli stati possibili entro N turni, in base alle mosse
+3. Si parte con **algoritmo min-max** con $\alpha-\beta$ pruning o quel che è
+4. Arrivati ai nodi foglia, si calcola il valore dallo stato in base alla **funzione euristica**
+5. Decisa la mossa, la invii al server
 
-```
-sudo apt update
-sudo apt install openjdk-8-jdk -y
-sudo apt install ant -y
-```
 
-Now, clone the project repository:
+## Creazione albero
 
-```
-git clone https://github.com/AGalassi/TablutCompetition.git
-```
-
-## Run the Server without Eclipse
-
-The easiest way is to utilize the ANT configuration script from console.
-Go into the project folder (the folder with the `build.xml` file):
-```
-cd TablutCompetition/Tablut
-```
-
-Compile the project:
-
-```
-ant clean
-ant compile
-```
-
-The compiled project is in  the `build` folder.
-Run the server with:
-
-```
-ant server
-```
-
-Check the behaviour using the random players in two different console windows:
-
-```
-ant randomwhite
-
-ant randomblack
-```
-
-At this point, a window with the game state should appear.
-
-To be able to run other classes, change the `build.xml` file and re-compile everything
+Partendo da stato A, e decidendo profondità massima N, nel turno nostro:
+1. **Elenco mosse possibili** a partire da stato A nel turno nostro
+    * Per ogni pedina, elencare mosse che può fare
+2. Per ogni mossa possibile, si crea sottoalbero, cambiando il turno da analizzare e cambiando lo stato in base alla mossa
+3. Ripeti fino a profondità N o mossa conclusiva
