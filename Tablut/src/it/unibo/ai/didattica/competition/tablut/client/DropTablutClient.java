@@ -13,12 +13,12 @@ import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IApplyActi
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.ICreateTree;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IListActions;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IMinMax;
-import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IStateEvaluator;
+import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic;
 
 public class DropTablutClient extends TablutClient {
     private IListActions actionLister;
     private ICreateTree treeCreator;
-    private IStateEvaluator heuristic;
+    private IHeuristic heuristic;
     private IMinMax minMaxer;
     private IApplyAction actionApplier;
     private int depth;
@@ -26,7 +26,7 @@ public class DropTablutClient extends TablutClient {
 
     public DropTablutClient(String player, String name, 
             int depth,
-            IListActions actionLister, ICreateTree treeCreator, IStateEvaluator heuristic, 
+            IListActions actionLister, ICreateTree treeCreator, IHeuristic heuristic, 
             IMinMax minMaxer, IApplyAction actionApplier)
             throws UnknownHostException, IOException {
         super(player, name);
@@ -108,11 +108,11 @@ public class DropTablutClient extends TablutClient {
         this.treeCreator = treeCreator;
     }
 
-    public IStateEvaluator getHeuristic() {
+    public IHeuristic getHeuristic() {
         return this.heuristic;
     }
 
-    public void setHeuristic(IStateEvaluator heuristic) {
+    public void setHeuristic(IHeuristic heuristic) {
         this.heuristic = heuristic;
     }
 

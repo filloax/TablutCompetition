@@ -25,11 +25,16 @@ Partendo da stato A, e decidendo profondità massima N, nel turno nostro:
 
 * Classe per elencare mosse possibili da uno stato per un colore
     * Partendo da stato, ogni mossa *legale* che può fare una pedina
+    * Interfaccia: [*IListActions*](./Tablut/src/it/unibo/ai/didattica/competition/tablut/droptablut/interfaces/IListActions.java)
 * Classe per ottenere nuovo stato da stato + mossa
+    * Interfaccia: [*IApplyAction*](./Tablut/src/it/unibo/ai/didattica/competition/tablut/droptablut/interfaces/IApplyAction.java)
 * Funzione per generare albero
+    * Interfaccia: [*ICreateTree*](./Tablut/src/it/unibo/ai/didattica/competition/tablut/droptablut/interfaces/ICreateTree.java)
 * Implementazione min-max (già esistente? controllare libreria AIMA)
     * C'è in libreria AIMA (classe [aima.core.search.adversarial.*AlphaBetaSearch*](https://github.com/aimacode/aima-java/blob/AIMA3e/aima-core/src/main/java/aima/core/search/adversarial/AlphaBetaSearch.java)), da capire come funziona
+    * Interfaccia: [*IMinMax*](./Tablut/src/it/unibo/ai/didattica/competition/tablut/droptablut/interfaces/IMinMax.java)
 * Funzione euristica: punteggio di uno stato
+    * Interfaccia: [*IHeuristic*](./Tablut/src/it/unibo/ai/didattica/competition/tablut/droptablut/interfaces/IHeuristic.java)
 
 ## Cose già fornite
 

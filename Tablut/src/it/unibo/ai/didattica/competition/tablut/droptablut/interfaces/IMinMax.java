@@ -4,5 +4,5 @@ import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.droptablut.TablutTreeNode;
 
 public interface IMinMax {
-    Action chooseAction(TablutTreeNode tree, IStateEvaluator heuristic);
+    Action chooseAction(TablutTreeNode tree, IHeuristic heuristic);
 }
