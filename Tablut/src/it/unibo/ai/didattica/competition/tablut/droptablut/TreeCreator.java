@@ -38,4 +38,5 @@ public class TreeCreator implements ICreateTree {
         }
 
         return current;
+    }
 }

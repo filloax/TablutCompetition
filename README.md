@@ -18,6 +18,25 @@ Partendo da stato A, e decidendo profondità massima N, nel turno nostro:
 2. Per ogni mossa possibile, si crea sottoalbero, cambiando il turno da analizzare e cambiando lo stato in base alla mossa
 3. Ripeti fino a profondità N o mossa conclusiva
 
+## Funzione euristica
+
+### Caso Bianchi
+
+Scopo: re deve scappare
+
+Opzione 1:
+* Se è in una casella dove potenzialmente potrebbe scappare: conta pedine di intralcio, -1 ciascuna
+* Se non lo è: conta pedine di intralcio per andare su una di quelle, -1 ciascuna
+* -2 per ogni pedina bianca persa, -inf per il re perso
+
+### Caso neri
+
+Scopo: inizialmente mangiare, poi bloccare
+
+Opzione 1: 
+* Sotto N bianchi mangiati: mangiare +2 ogni bianco mangiato
+* Sopra N bianchi mangiati: +1 ogni bianco mangiato
+* In generale: +1 ogni pedina tra re e caselle fuga (stessa logica bianchi)
 
 # Elementi
 
@@ -27,7 +46,7 @@ Partendo da stato A, e decidendo profondità massima N, nel turno nostro:
     * Partendo da stato, ogni mossa *legale* che può fare una pedina
     * Interfaccia: ✔️ [*IListActions*](./Tablut/src/it/unibo/ai/didattica/competition/tablut/droptablut/interfaces/IListActions.java)
 * Classe per ottenere nuovo stato da stato + mossa
-    * Interfaccia: [*IApplyAction*](./Tablut/src/it/unibo/ai/didattica/competition/tablut/droptablut/interfaces/IApplyAction.java)
+    * Interfaccia: ✔️ [*IApplyAction*](./Tablut/src/it/unibo/ai/didattica/competition/tablut/droptablut/interfaces/IApplyAction.java)
 * Funzione per generare albero
     * Interfaccia: ✔️ [*ICreateTree*](./Tablut/src/it/unibo/ai/didattica/competition/tablut/droptablut/interfaces/ICreateTree.java)
 * Implementazione min-max (già esistente? controllare libreria AIMA)
