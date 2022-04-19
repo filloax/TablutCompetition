@@ -19,9 +19,9 @@ public class Action implements Serializable {
 
 	private State.Turn turn;
 
-	public Action(String from, String to, StateTablut.Turn t) throws IOException {
+	public Action(String from, String to, StateTablut.Turn t) {
 		if (from.length() != 2 || to.length() != 2) {
-			throw new InvalidParameterException("the FROM and the TO string must have length=2");
+			throw new IllegalArgumentException("the FROM and the TO string must have length=2");
 		} else {
 			this.from = from;
 			this.to = to;
