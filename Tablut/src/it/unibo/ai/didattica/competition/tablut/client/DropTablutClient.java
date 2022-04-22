@@ -1,19 +1,22 @@
 package it.unibo.ai.didattica.competition.tablut.client;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.List;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
-import it.unibo.ai.didattica.competition.tablut.domain.StateTablut;
+import it.unibo.ai.didattica.competition.tablut.domain.MinMaxAlphaBeta;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
+import it.unibo.ai.didattica.competition.tablut.domain.StateTablut;
+import it.unibo.ai.didattica.competition.tablut.droptablut.ApplyAction;
+import it.unibo.ai.didattica.competition.tablut.droptablut.DropTablutHeuristic;
+import it.unibo.ai.didattica.competition.tablut.droptablut.ListActions;
 import it.unibo.ai.didattica.competition.tablut.droptablut.TablutTreeNode;
+import it.unibo.ai.didattica.competition.tablut.droptablut.TreeCreator;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IApplyAction;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.ICreateTree;
+import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IListActions;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IMinMax;
-import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic;
 
 public class DropTablutClient extends TablutClient {
     private IListActions actionLister;
@@ -90,7 +93,29 @@ public class DropTablutClient extends TablutClient {
         }
     }
 
+	public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException {
 
+		if (args.length == 0) {
+			System.out.println("You must specify which player you are (WHITE or BLACK)!");
+			System.exit(-1);
+		}
+		System.out.println("Selected this: " + args[0]);
+
+        Turn color = ((args[0].equals("WHITE")) ? Turn.WHITE : Turn.BLACK);
+
+		DropTablutClient client = new DropTablutClient(
+            args[0], 
+            "DropTablut",
+            5,
+            new ListActions(),
+            new TreeCreator(),
+            new DropTablutHeuristic(color),
+            new MinMaxAlphaBeta(),
+            new ApplyAction()
+        );
+
+		client.run();
+	}
 
     public IListActions getActionLister() {
         return this.actionLister;

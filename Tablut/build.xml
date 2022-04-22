@@ -71,6 +71,24 @@
         </java>
     </target>
 
+    <target name="projectwhite">
+        <java classname="it.unibo.ai.didattica.competition.tablut.droptablut.DropTablutMainWhite" fork="true">
+            <classpath>
+                <pathelement location="lib/gson-2.2.2.jar"/>
+                <pathelement location="build"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="projectblack">
+        <java classname="it.unibo.ai.didattica.competition.tablut.droptablut.DropTablutMainBlack" fork="true">
+            <classpath>
+                <pathelement location="lib/gson-2.2.2.jar"/>
+                <pathelement location="build"/>
+            </classpath>
+        </java>
+    </target>
+
     <target name="random-jar">
         <jar destfile="random.jar" filesetmanifest="mergewithoutmain">
             <manifest>

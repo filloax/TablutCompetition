@@ -20,6 +20,19 @@ Partendo da stato A, e decidendo profondità massima N, nel turno nostro:
 
 ## Funzione euristica
 
+### Appunti vari
+
+* Molto più importante posizione re che pedine prese, in ambo i casi
+* Avere una pedina avversaria adiacente mette a rischio
+
+Bianchi
+* Bianco non deve lasciare re scoperto muovendosi
+* Meglio muovere il re solo quando c'è un basso numero di neri
+
+Neri
+* Se il nero vede il re scoperto, è saggio muovercisi di fianco
+
+
 ### Caso Bianchi
 
 Scopo: re deve scappare
@@ -61,3 +74,8 @@ Opzione 1:
 * Rappresentazione mosse
 * Comunicazione con server
 * Validazione mosse
+
+## Possibili ottimizzazioni
+
+* Tracciare Action durante alpha-beta per evitare loop finale
+    * bestValue oggetto con double e action

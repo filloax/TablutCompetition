@@ -1,9 +1,8 @@
 package it.unibo.ai.didattica.competition.tablut.droptablut;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IApplyAction;
@@ -16,23 +15,26 @@ public class TreeCreator implements ICreateTree {
     public TablutTreeNode generateTree(State fromState, int depth, 
             IListActions validActionsLister,
             IApplyAction actionApplier) {
-        TablutTreeNode current = new TablutTreeNode(fromState);
+        return generateTreeRec(fromState, depth, validActionsLister, actionApplier, null);
+    }
 
-        if (depth <= 0) {
-            List<State> childrenStates = validActionsLister.getValidActions(fromState)
-                .stream()
-                .map(action -> actionApplier.applyAction(fromState, action))
-                .collect(Collectors.toList());
+    public TablutTreeNode generateTreeRec(State fromState, int depth, 
+    IListActions validActionsLister, IApplyAction actionApplier, Action action) {
+        TablutTreeNode current = new TablutTreeNode(fromState, action);
 
-            for (State childrenState : childrenStates) {
-                if (   childrenState.getTurn() == Turn.BLACKWIN 
-                    || childrenState.getTurn() == Turn.WHITEWIN
-                    || childrenState.getTurn() == Turn.DRAW
+        if (depth > 0) {
+            List<Action> possibleActions = validActionsLister.getValidActions(fromState);
+
+            for (Action childAction : possibleActions) {
+                State childState = actionApplier.applyAction(fromState, childAction);
+                if (   childState.getTurn() == Turn.BLACKWIN 
+                    || childState.getTurn() == Turn.WHITEWIN
+                    || childState.getTurn() == Turn.DRAW
                     ) 
                 {
-                    current.getChildren().add(new TablutTreeNode(childrenState));
+                    current.getChildren().add(new TablutTreeNode(childState, childAction));
                 } else {
-                    current.getChildren().add(generateTree(childrenState, depth - 1, validActionsLister, actionApplier));
+                    current.getChildren().add(generateTreeRec(childState, depth - 1, validActionsLister, actionApplier, childAction));
                 }
             }
         }

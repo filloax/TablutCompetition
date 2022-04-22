@@ -32,16 +32,12 @@ public class AggiungiRe implements ActionListener {
 		String casella = posizione.getText();
 		posizione.setText("");
 		Action a = null;
-		try {
 			a = new Action(casella, casella, Turn.WHITE);
 			int column = a.getColumnFrom();
 			int row = a.getRowFrom();
 			this.state.getBoard()[row][column] = Pawn.KING;
 			this.theGui.update(state);
 			this.ret.setState(state);
-		} catch (IOException e1) {
-			System.out.println("Wrong format of the position. Write position as \"A1\" where A1 is the cell");
-		}
 	}
 
 }

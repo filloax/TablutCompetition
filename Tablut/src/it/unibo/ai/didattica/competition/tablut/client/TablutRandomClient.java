@@ -151,12 +151,7 @@ public class TablutRandomClient extends TablutClient {
 
 					boolean found = false;
 					Action a = null;
-					try {
-						a = new Action("z0", "z0", State.Turn.WHITE);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					a = new Action("z0", "z0", State.Turn.WHITE);
 					while (!found) {
 						if (pawns.size() > 1) {
 							selected = pawns.get(new Random().nextInt(pawns.size() - 1));
@@ -169,12 +164,9 @@ public class TablutRandomClient extends TablutClient {
 						selected = empty.get(new Random().nextInt(empty.size() - 1));
 						String to = this.getCurrentState().getBox(selected[0], selected[1]);
 
-						try {
+
 							a = new Action(from, to, State.Turn.WHITE);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+
 
 						try {
 							rules.checkMove(state, a);
@@ -241,13 +233,9 @@ public class TablutRandomClient extends TablutClient {
 
 					boolean found = false;
 					Action a = null;
-					try {
+
 						a = new Action("z0", "z0", State.Turn.BLACK);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					;
+
 					while (!found) {
 						selected = pawns.get(new Random().nextInt(pawns.size() - 1));
 						String from = this.getCurrentState().getBox(selected[0], selected[1]);
@@ -255,12 +243,7 @@ public class TablutRandomClient extends TablutClient {
 						selected = empty.get(new Random().nextInt(empty.size() - 1));
 						String to = this.getCurrentState().getBox(selected[0], selected[1]);
 
-						try {
 							a = new Action(from, to, State.Turn.BLACK);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
 
 						System.out.println("try: " + a.toString());
 						try {
