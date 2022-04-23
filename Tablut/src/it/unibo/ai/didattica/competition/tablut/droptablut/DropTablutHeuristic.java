@@ -79,25 +79,6 @@ public class DropTablutHeuristic implements IHeuristic {
     private double getBlackScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles) {
         return numBlack *  0.5 + numWhite * -1 + numFreeDirections * -5 + numObstacles;
     }
-    
-    private final static Coord[] campCoords = new Coord[]{
-        new Coord(0, 3),
-        new Coord(0, 4),
-        new Coord(0, 5),
-        new Coord(1, 4),
-        new Coord(8, 3),
-        new Coord(8, 4),
-        new Coord(8, 5),
-        new Coord(7, 4),
-        new Coord(3, 0),
-        new Coord(4, 0),
-        new Coord(5, 0),
-        new Coord(4, 1),
-        new Coord(3, 8),
-        new Coord(4, 8),
-        new Coord(5, 8),
-        new Coord(4, 7)
-    };
 
     private int countKingObstacles(State state, Direction dir, int kingX, int kingY) {
         Pawn board[][] = state.getBoard();
@@ -106,14 +87,9 @@ public class DropTablutHeuristic implements IHeuristic {
         if (dir == Direction.LEFT) {
             for (int x = kingX - 1; x >= 0; x--) {
                 boolean isEmpty = board[kingY][x] == Pawn.EMPTY;
-                if (isEmpty) {
-                    // Controlla se è un accampamento
-                    for (Coord campCoord : campCoords) {
-                        if (campCoord.x == x && campCoord.y == kingY) {
-                            isEmpty = false;
-                            break;
-                        }
-                    }
+                // Controlla se è un accampamento
+                if (isEmpty && GameConstants.citadels.contains(state.getBox(x, kingY))) {
+                    isEmpty = false;
                 }
 
                 if (!isEmpty) {
@@ -123,14 +99,9 @@ public class DropTablutHeuristic implements IHeuristic {
         } else if (dir == Direction.RIGHT) {
             for (int x = kingX + 1; x < 9; x++) {
                 boolean isEmpty = board[kingY][x] == Pawn.EMPTY;
-                if (isEmpty) {
-                    // Controlla se è un accampamento
-                    for (Coord campCoord : campCoords) {
-                        if (campCoord.x == x && campCoord.y == kingY) {
-                            isEmpty = false;
-                            break;
-                        }
-                    }
+                // Controlla se è un accampamento
+                if (isEmpty && GameConstants.citadels.contains(state.getBox(x, kingY))) {
+                    isEmpty = false;
                 }
 
                 if (!isEmpty) {
@@ -140,14 +111,9 @@ public class DropTablutHeuristic implements IHeuristic {
         } else if (dir == Direction.UP) {
             for (int y = kingY - 1; y >= 0; y--) {
                 boolean isEmpty = board[y][kingX] == Pawn.EMPTY;
-                if (isEmpty) {
-                    // Controlla se è un accampamento
-                    for (Coord campCoord : campCoords) {
-                        if (campCoord.x == kingX && campCoord.y == y) {
-                            isEmpty = false;
-                            break;
-                        }
-                    }
+                // Controlla se è un accampamento
+                if (isEmpty && GameConstants.citadels.contains(state.getBox(y, kingX))) {
+                    isEmpty = false;
                 }
 
                 if (!isEmpty) {
@@ -157,14 +123,9 @@ public class DropTablutHeuristic implements IHeuristic {
         } else if (dir == Direction.DOWN) {
             for (int y = kingY + 1; y < 9; y++) {
                 boolean isEmpty = board[y][kingX] == Pawn.EMPTY;
-                if (isEmpty) {
-                    // Controlla se è un accampamento
-                    for (Coord campCoord : campCoords) {
-                        if (campCoord.x == kingX && campCoord.y == y) {
-                            isEmpty = false;
-                            break;
-                        }
-                    }
+                // Controlla se è un accampamento
+                if (isEmpty && GameConstants.citadels.contains(state.getBox(y, kingX))) {
+                    isEmpty = false;
                 }
 
                 if (!isEmpty) {
@@ -174,14 +135,5 @@ public class DropTablutHeuristic implements IHeuristic {
         }
 
         return count;
-    }
-
-    private static class Coord {
-        int x;
-        int y;
-        Coord(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
     }
 }
