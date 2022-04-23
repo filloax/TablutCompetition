@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
-import it.unibo.ai.didattica.competition.tablut.domain.MinMaxAlphaBeta;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.domain.StateTablut;
 import it.unibo.ai.didattica.competition.tablut.droptablut.ApplyAction;
 import it.unibo.ai.didattica.competition.tablut.droptablut.DropTablutHeuristic;
 import it.unibo.ai.didattica.competition.tablut.droptablut.ListActions;
+import it.unibo.ai.didattica.competition.tablut.droptablut.MinMaxAlphaBeta;
 import it.unibo.ai.didattica.competition.tablut.droptablut.TablutTreeNode;
 import it.unibo.ai.didattica.competition.tablut.droptablut.TreeCreator;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IApplyAction;

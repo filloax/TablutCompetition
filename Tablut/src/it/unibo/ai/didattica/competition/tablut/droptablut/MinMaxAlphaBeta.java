@@ -1,8 +1,8 @@
-package it.unibo.ai.didattica.competition.tablut.domain;
+package it.unibo.ai.didattica.competition.tablut.droptablut;
 
 import java.util.Random;
 
-import it.unibo.ai.didattica.competition.tablut.droptablut.TablutTreeNode;
+import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IMinMax;
 
