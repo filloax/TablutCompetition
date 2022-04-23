@@ -15,6 +15,9 @@ public class TreeCreator implements ICreateTree {
     public TablutTreeNode generateTree(State fromState, int depth, 
             IListActions validActionsLister,
             IApplyAction actionApplier) {
+        if (DTConstants.DEBUG_MODE) {
+            System.out.println(String.format("Start tree creation"));
+        }
         return generateTreeRec(fromState, depth, validActionsLister, actionApplier, null, null);
     }
 
@@ -23,8 +26,13 @@ public class TreeCreator implements ICreateTree {
     Action action, TablutTreeNode parent) {
         TablutTreeNode current = new TablutTreeNode(fromState, action, parent);
 
+        if (DTConstants.DEBUG_MODE) {
+            System.out.println(String.format("\t%d | %s: gen tree", depth, current));
+        }
+
         if (depth > 0) {
             List<Action> possibleActions = validActionsLister.getValidActions(fromState);
+            System.out.println(String.format("\t%d | %s: child actions %d", depth, current, possibleActions.size()));
 
             for (Action childAction : possibleActions) {
                 State childState = actionApplier.applyAction(fromState, childAction);

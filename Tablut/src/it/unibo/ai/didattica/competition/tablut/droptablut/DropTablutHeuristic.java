@@ -88,7 +88,7 @@ public class DropTablutHeuristic implements IHeuristic {
             for (int x = kingX - 1; x >= 0; x--) {
                 boolean isEmpty = board[kingY][x] == Pawn.EMPTY;
                 // Controlla se è un accampamento
-                if (isEmpty && GameConstants.citadels.contains(state.getBox(x, kingY))) {
+                if (isEmpty && DTConstants.citadels.contains(state.getBox(x, kingY))) {
                     isEmpty = false;
                 }
 
@@ -100,7 +100,7 @@ public class DropTablutHeuristic implements IHeuristic {
             for (int x = kingX + 1; x < 9; x++) {
                 boolean isEmpty = board[kingY][x] == Pawn.EMPTY;
                 // Controlla se è un accampamento
-                if (isEmpty && GameConstants.citadels.contains(state.getBox(x, kingY))) {
+                if (isEmpty && DTConstants.citadels.contains(state.getBox(x, kingY))) {
                     isEmpty = false;
                 }
 
@@ -112,7 +112,7 @@ public class DropTablutHeuristic implements IHeuristic {
             for (int y = kingY - 1; y >= 0; y--) {
                 boolean isEmpty = board[y][kingX] == Pawn.EMPTY;
                 // Controlla se è un accampamento
-                if (isEmpty && GameConstants.citadels.contains(state.getBox(y, kingX))) {
+                if (isEmpty && DTConstants.citadels.contains(state.getBox(y, kingX))) {
                     isEmpty = false;
                 }
 
@@ -124,7 +124,7 @@ public class DropTablutHeuristic implements IHeuristic {
             for (int y = kingY + 1; y < 9; y++) {
                 boolean isEmpty = board[y][kingX] == Pawn.EMPTY;
                 // Controlla se è un accampamento
-                if (isEmpty && GameConstants.citadels.contains(state.getBox(y, kingX))) {
+                if (isEmpty && DTConstants.citadels.contains(state.getBox(y, kingX))) {
                     isEmpty = false;
                 }
 

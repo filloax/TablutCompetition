@@ -8,7 +8,6 @@ import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Pawn;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IListActions;
-import it.unibo.ai.didattica.competition.tablut.exceptions.*;
 
 public class ListActions implements IListActions {
 
@@ -101,12 +100,12 @@ public class ListActions implements IListActions {
 		if (!state.getPawn(rowTo, columnTo).equalsPawn(State.Pawn.EMPTY.toString())) {
 			return false;
 		}
-		if (GameConstants.citadels.contains(state.getBox(rowTo, columnTo))
-				&& !GameConstants.citadels.contains(state.getBox(rowFrom, columnFrom))) {
+		if (DTConstants.citadels.contains(state.getBox(rowTo, columnTo))
+				&& !DTConstants.citadels.contains(state.getBox(rowFrom, columnFrom))) {
 			return false;
 		}
-		if (GameConstants.citadels.contains(state.getBox(rowTo, columnTo))
-				&& GameConstants.citadels.contains(state.getBox(rowFrom, columnFrom))) {
+		if (DTConstants.citadels.contains(state.getBox(rowTo, columnTo))
+				&& DTConstants.citadels.contains(state.getBox(rowFrom, columnFrom))) {
 			if (rowFrom == rowTo) {
 				if (columnFrom - columnTo > 5 || columnFrom - columnTo < -5) {
 					return false;
@@ -153,8 +152,8 @@ public class ListActions implements IListActions {
 							return false;
 						}
 					}
-					if (GameConstants.citadels.contains(state.getBox(rowFrom, i))
-							&& !GameConstants.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
+					if (DTConstants.citadels.contains(state.getBox(rowFrom, i))
+							&& !DTConstants.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
 						return false;
 					}
 				}
@@ -167,8 +166,8 @@ public class ListActions implements IListActions {
 							return false;
 						}
 					}
-					if (GameConstants.citadels.contains(state.getBox(rowFrom, i))
-							&& !GameConstants.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
+					if (DTConstants.citadels.contains(state.getBox(rowFrom, i))
+							&& !DTConstants.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
 						return false;
 					}
 				}
@@ -183,8 +182,8 @@ public class ListActions implements IListActions {
 							return false;
 						}
 					}
-					if (GameConstants.citadels.contains(state.getBox(i, columnFrom))
-							&& !GameConstants.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
+					if (DTConstants.citadels.contains(state.getBox(i, columnFrom))
+							&& !DTConstants.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
 						return false;
 					}
 				}
@@ -197,8 +196,8 @@ public class ListActions implements IListActions {
 							return false;
 						}
 					}
-					if (GameConstants.citadels.contains(state.getBox(i, columnFrom))
-							&& !GameConstants.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
+					if (DTConstants.citadels.contains(state.getBox(i, columnFrom))
+							&& !DTConstants.citadels.contains(state.getBox(a.getRowFrom(), a.getColumnFrom()))) {
 						return false;
 					}
 				}

@@ -1,9 +1,10 @@
 package it.unibo.ai.didattica.competition.tablut.droptablut;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class GameConstants {
+public class DTConstants {
+    public static final boolean DEBUG_MODE = true;
+
     public static final List<String> citadels = List.of(
         "a4",
         "a5",

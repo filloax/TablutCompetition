@@ -11,15 +11,16 @@ public class ApplyAction implements IApplyAction {
     public State applyAction(State fromState, Action action) {
         // Questo suppone che Turn venga copiato e non sia un riferimento
         Turn startTurn = fromState.getTurn();
-		State state = this.movePawn(fromState, action);
+		State state = fromState.clone();
+		this.movePawn(state, action);
 		
 		if (startTurn.equalsTurn("B"))
 		{
-			state = this.checkCaptureBlack(state, action);
+			this.checkCaptureBlack(state, action);
 		}
 		if (startTurn.equalsTurn("W"))
 		{
-			state = this.checkCaptureWhite(state, action);
+			this.checkCaptureWhite(state, action);
 		}
 
         return state;
@@ -34,7 +35,7 @@ public class ApplyAction implements IApplyAction {
 				&& (state.getPawn(a.getRowTo(), a.getColumnTo() + 2).equalsPawn("W")
 				|| state.getPawn(a.getRowTo(), a.getColumnTo() + 2).equalsPawn("T")
 				|| state.getPawn(a.getRowTo(), a.getColumnTo() + 2).equalsPawn("K")
-				|| (GameConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() + 2))
+				|| (DTConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() + 2))
 				&& !(a.getColumnTo() + 2 == 8 && a.getRowTo() == 4)
 				&& !(a.getColumnTo() + 2 == 4 && a.getRowTo() == 0)
 				&& !(a.getColumnTo() + 2 == 4 && a.getRowTo() == 8)
@@ -46,7 +47,7 @@ public class ApplyAction implements IApplyAction {
 				&& (state.getPawn(a.getRowTo(), a.getColumnTo() - 2).equalsPawn("W")
 				|| state.getPawn(a.getRowTo(), a.getColumnTo() - 2).equalsPawn("T")
 				|| state.getPawn(a.getRowTo(), a.getColumnTo() - 2).equalsPawn("K")
-				|| (GameConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() - 2))
+				|| (DTConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() - 2))
 				&& !(a.getColumnTo() - 2 == 8 && a.getRowTo() == 4)
 				&& !(a.getColumnTo() - 2 == 4 && a.getRowTo() == 0)
 				&& !(a.getColumnTo() - 2 == 4 && a.getRowTo() == 8)
@@ -58,7 +59,7 @@ public class ApplyAction implements IApplyAction {
 				&& (state.getPawn(a.getRowTo() - 2, a.getColumnTo()).equalsPawn("W")
 				|| state.getPawn(a.getRowTo() - 2, a.getColumnTo()).equalsPawn("T")
 				|| state.getPawn(a.getRowTo() - 2, a.getColumnTo()).equalsPawn("K")
-				|| (GameConstants.citadels.contains(state.getBox(a.getRowTo() - 2, a.getColumnTo()))
+				|| (DTConstants.citadels.contains(state.getBox(a.getRowTo() - 2, a.getColumnTo()))
 				&& !(a.getColumnTo() == 8 && a.getRowTo() - 2 == 4)
 				&& !(a.getColumnTo() == 4 && a.getRowTo() - 2 == 0)
 				&& !(a.getColumnTo() == 4 && a.getRowTo() - 2 == 8)
@@ -71,7 +72,7 @@ public class ApplyAction implements IApplyAction {
 				&& (state.getPawn(a.getRowTo() + 2, a.getColumnTo()).equalsPawn("W")
 				|| state.getPawn(a.getRowTo() + 2, a.getColumnTo()).equalsPawn("T")
 				|| state.getPawn(a.getRowTo() + 2, a.getColumnTo()).equalsPawn("K")
-				|| (GameConstants.citadels.contains(state.getBox(a.getRowTo() + 2, a.getColumnTo()))
+				|| (DTConstants.citadels.contains(state.getBox(a.getRowTo() + 2, a.getColumnTo()))
 				&& !(a.getColumnTo() == 8 && a.getRowTo() + 2 == 4)
 				&& !(a.getColumnTo() == 4 && a.getRowTo() + 2 == 0)
 				&& !(a.getColumnTo() == 4 && a.getRowTo() + 2 == 8)
@@ -124,7 +125,7 @@ public class ApplyAction implements IApplyAction {
 					&& !state.getBox(a.getRowTo(), a.getColumnTo() - 1).equals("e4")
 					&& !state.getBox(a.getRowTo(), a.getColumnTo() - 1).equals("f5")) {
 				if (state.getPawn(a.getRowTo(), a.getColumnTo() - 2).equalsPawn("B")
-						|| GameConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() - 2))) {
+						|| DTConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() - 2))) {
 					state.setTurn(State.Turn.BLACKWIN);
 				}
 			}
@@ -165,7 +166,7 @@ public class ApplyAction implements IApplyAction {
 					&& !state.getBox(a.getRowTo(), a.getColumnTo() + 1).equals("e4")
 					&& !state.getBox(a.getRowTo(), a.getColumnTo() + 1).equals("e5")) {
 				if (state.getPawn(a.getRowTo(), a.getColumnTo() + 2).equalsPawn("B")
-						|| GameConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() + 2))) {
+						|| DTConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() + 2))) {
 					state.setTurn(State.Turn.BLACKWIN);
 				}
 			}
@@ -177,7 +178,7 @@ public class ApplyAction implements IApplyAction {
 		// ho il re sotto
 		if (a.getRowTo() < state.getBoard().length - 2
 				&& state.getPawn(a.getRowTo() + 1, a.getColumnTo()).equalsPawn("K")) {
-			System.out.println("Ho il re sotto");
+			// System.out.println("Ho il re sotto");
 			// re sul trono
 			if (state.getBox(a.getRowTo() + 1, a.getColumnTo()).equals("e5")) {
 				if (state.getPawn(5, 4).equalsPawn("B") && state.getPawn(4, 5).equalsPawn("B")
@@ -207,7 +208,7 @@ public class ApplyAction implements IApplyAction {
 					&& !state.getBox(a.getRowTo() + 1, a.getColumnTo()).equals("f5")
 					&& !state.getBox(a.getRowTo() + 1, a.getColumnTo()).equals("e5")) {
 				if (state.getPawn(a.getRowTo() + 2, a.getColumnTo()).equalsPawn("B")
-						|| GameConstants.citadels.contains(state.getBox(a.getRowTo() + 2, a.getColumnTo()))) {
+						|| DTConstants.citadels.contains(state.getBox(a.getRowTo() + 2, a.getColumnTo()))) {
 					state.setTurn(State.Turn.BLACKWIN);
 				}
 			}
@@ -247,7 +248,7 @@ public class ApplyAction implements IApplyAction {
 					&& !state.getBox(a.getRowTo() - 1, a.getColumnTo()).equals("f5")
 					&& !state.getBox(a.getRowTo() - 1, a.getColumnTo()).equals("e5")) {
 				if (state.getPawn(a.getRowTo() - 2, a.getColumnTo()).equalsPawn("B")
-						|| GameConstants.citadels.contains(state.getBox(a.getRowTo() - 2, a.getColumnTo()))) {
+						|| DTConstants.citadels.contains(state.getBox(a.getRowTo() - 2, a.getColumnTo()))) {
 					state.setTurn(State.Turn.BLACKWIN);
 				}
 			}
@@ -265,7 +266,7 @@ public class ApplyAction implements IApplyAction {
 			if (state.getPawn(a.getRowTo(), a.getColumnTo() + 2).equalsPawn("T")) {
 				state.removePawn(a.getRowTo(), a.getColumnTo() + 1);
 			}
-			if (GameConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() + 2))) {
+			if (DTConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() + 2))) {
 				state.removePawn(a.getRowTo(), a.getColumnTo() + 1);
 			}
 			if (state.getBox(a.getRowTo(), a.getColumnTo() + 2).equals("e5")) {
@@ -282,7 +283,7 @@ public class ApplyAction implements IApplyAction {
 		if (a.getColumnTo() > 1 && state.getPawn(a.getRowTo(), a.getColumnTo() - 1).equalsPawn("W")
 				&& (state.getPawn(a.getRowTo(), a.getColumnTo() - 2).equalsPawn("B")
 				|| state.getPawn(a.getRowTo(), a.getColumnTo() - 2).equalsPawn("T")
-				|| GameConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() - 2))
+				|| DTConstants.citadels.contains(state.getBox(a.getRowTo(), a.getColumnTo() - 2))
 				|| (state.getBox(a.getRowTo(), a.getColumnTo() - 2).equals("e5")))) {
 			state.removePawn(a.getRowTo(), a.getColumnTo() - 1);
 		}
@@ -294,7 +295,7 @@ public class ApplyAction implements IApplyAction {
 		if (a.getRowTo() > 1 && state.getPawn(a.getRowTo() - 1, a.getColumnTo()).equalsPawn("W")
 				&& (state.getPawn(a.getRowTo() - 2, a.getColumnTo()).equalsPawn("B")
 				|| state.getPawn(a.getRowTo() - 2, a.getColumnTo()).equalsPawn("T")
-				|| GameConstants.citadels.contains(state.getBox(a.getRowTo() - 2, a.getColumnTo()))
+				|| DTConstants.citadels.contains(state.getBox(a.getRowTo() - 2, a.getColumnTo()))
 				|| (state.getBox(a.getRowTo() - 2, a.getColumnTo()).equals("e5")))) {
 			state.removePawn(a.getRowTo() - 1, a.getColumnTo());
 		}
@@ -307,7 +308,7 @@ public class ApplyAction implements IApplyAction {
 				&& state.getPawn(a.getRowTo() + 1, a.getColumnTo()).equalsPawn("W")
 				&& (state.getPawn(a.getRowTo() + 2, a.getColumnTo()).equalsPawn("B")
 				|| state.getPawn(a.getRowTo() + 2, a.getColumnTo()).equalsPawn("T")
-				|| GameConstants.citadels.contains(state.getBox(a.getRowTo() + 2, a.getColumnTo()))
+				|| DTConstants.citadels.contains(state.getBox(a.getRowTo() + 2, a.getColumnTo()))
 				|| (state.getBox(a.getRowTo() + 2, a.getColumnTo()).equals("e5")))) {
 			state.removePawn(a.getRowTo() + 1, a.getColumnTo());
 		}
