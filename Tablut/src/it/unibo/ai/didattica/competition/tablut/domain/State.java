@@ -2,6 +2,10 @@ package it.unibo.ai.didattica.competition.tablut.domain;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract class for a State of a game We have a representation of the board
@@ -46,6 +50,8 @@ public abstract class State {
 		EMPTY("O"), WHITE("W"), BLACK("B"), THRONE("T"), KING("K");
 		private final String pawn;
 
+		private final static Map<String, Pawn> enumMap;
+
 		private Pawn(String s) {
 			pawn = s;
 		}
@@ -58,6 +64,17 @@ public abstract class State {
 			return pawn;
 		}
 
+		static {
+			Map<String,Pawn> map = new ConcurrentHashMap<String, Pawn>();
+			for (Pawn instance : Pawn.values()) {
+				map.put(instance.pawn, instance);
+			}
+			enumMap = Collections.unmodifiableMap(map);
+		}
+
+		public static Pawn fromString(String s) {
+			return enumMap.get(s);
+		}
 	}
 
 	protected Pawn board[][];
