@@ -17,8 +17,20 @@ public class MinMaxAlphaBeta implements IMinMax {
             usa alpha beta per trovare il punteggio migliore che ottieni su quella strada
         
         */
-        double bestOverall = minmax(tree, true, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, heuristic);
+        double bestOverall = minmax(tree, 0, true, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, heuristic);
         Action action = null;
+
+        if (DEBUG_MODE) {
+            System.out.println(String.format("Punteggio euristico mosse (tot mosse: %d):", tree.getChildren().size()));
+            for (TablutTreeNode child : tree.getChildren()) {
+                System.out.println(String.format(
+                    "\t%s -> %s: %s", 
+                    child.getAction().getFrom(),
+                    child.getAction().getTo(),
+                    (child.hasValue() ? child.getValue() : "skip")
+                ));
+            }
+        }
 
         for (TablutTreeNode child : tree.getChildren()) {
             if (child.hasValue() && child.getValue() == bestOverall) {
@@ -26,6 +38,7 @@ public class MinMaxAlphaBeta implements IMinMax {
                 if (DEBUG_MODE) {
                     System.out.println(String.format("Scelta azione con punteggio %f: %s -> %s", bestOverall, action.getFrom(), action.getTo()));
                 }
+                break;
             }
         }
 
@@ -41,7 +54,7 @@ public class MinMaxAlphaBeta implements IMinMax {
         return action;
     }
 
-    public double minmax(TablutTreeNode node, boolean isMaxPlayer, double alpha, double beta, IHeuristic heuristic) {
+    public double minmax(TablutTreeNode node, int depth, boolean isMaxPlayer, double alpha, double beta, IHeuristic heuristic) {
         /*
         function minimax(node, depth, isMaximizingPlayer, alpha, beta):
             if node is a leaf node :
@@ -67,16 +80,33 @@ public class MinMaxAlphaBeta implements IMinMax {
                         break
             return bestVal
         */
-        if (node.isLeaf())
-            return heuristic.heuristic(node.getState());
+
+        if (DEBUG_MODE) {
+            System.out.println(String.format("%d | Running for node with %d children %s", 
+                depth, node.getChildren().size(), node.toStringTrace()));
+        }
+
+        if (node.isLeaf()) {
+            double val = heuristic.heuristic(node.getState());
+            if (DEBUG_MODE) {
+                System.out.println(String.format("--> %d | Ran heuristic for %s: %f", depth, node, val));
+            }
+            return val;
+        }
 
         double bestVal;
         if (isMaxPlayer) {
             bestVal = Double.NEGATIVE_INFINITY;
             for (TablutTreeNode child : node.getChildren()) {
-                double val = minmax(child, false, alpha, beta, heuristic);
-                bestVal = Math.max(val, bestVal);
-                node.setValue(bestVal);
+                double val = minmax(child, depth + 1, false, alpha, beta, heuristic);
+                if (val != bestVal) {
+                    bestVal = Math.max(val, bestVal);
+                    if (DEBUG_MODE && node.getAction() != null) {
+                        System.out.println(String.format("%d | Setting value of node %s to %f", 
+                            depth, node, bestVal));
+                    }
+                    node.setValue(bestVal);
+                }
                 alpha = Math.max(alpha, bestVal);
                 if (beta <= alpha) 
                     break;
@@ -85,9 +115,15 @@ public class MinMaxAlphaBeta implements IMinMax {
         } else {
             bestVal = Double.POSITIVE_INFINITY;
             for (TablutTreeNode child : node.getChildren()) {
-                double val = minmax(child, true, alpha, beta, heuristic);
-                bestVal = Math.min(val, bestVal);
-                node.setValue(bestVal);
+                double val = minmax(child, depth + 1, true, alpha, beta, heuristic);
+                if (val != bestVal) {
+                    bestVal = Math.min(val, bestVal);
+                    if (DEBUG_MODE && node.getAction() != null) {
+                        System.out.println(String.format("%d | Setting value of node %s to %f", 
+                            depth, node, bestVal));
+                    }
+                    node.setValue(bestVal);
+                }
                 beta = Math.min(beta, bestVal);
                 if (beta <= alpha) 
                     break;

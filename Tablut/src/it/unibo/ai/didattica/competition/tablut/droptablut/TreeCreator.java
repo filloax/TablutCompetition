@@ -15,12 +15,13 @@ public class TreeCreator implements ICreateTree {
     public TablutTreeNode generateTree(State fromState, int depth, 
             IListActions validActionsLister,
             IApplyAction actionApplier) {
-        return generateTreeRec(fromState, depth, validActionsLister, actionApplier, null);
+        return generateTreeRec(fromState, depth, validActionsLister, actionApplier, null, null);
     }
 
     public TablutTreeNode generateTreeRec(State fromState, int depth, 
-    IListActions validActionsLister, IApplyAction actionApplier, Action action) {
-        TablutTreeNode current = new TablutTreeNode(fromState, action);
+    IListActions validActionsLister, IApplyAction actionApplier, 
+    Action action, TablutTreeNode parent) {
+        TablutTreeNode current = new TablutTreeNode(fromState, action, parent);
 
         if (depth > 0) {
             List<Action> possibleActions = validActionsLister.getValidActions(fromState);
@@ -32,9 +33,9 @@ public class TreeCreator implements ICreateTree {
                     || childState.getTurn() == Turn.DRAW
                     ) 
                 {
-                    current.getChildren().add(new TablutTreeNode(childState, childAction));
+                    current.getChildren().add(new TablutTreeNode(childState, childAction, current));
                 } else {
-                    current.getChildren().add(generateTreeRec(childState, depth - 1, validActionsLister, actionApplier, childAction));
+                    current.getChildren().add(generateTreeRec(childState, depth - 1, validActionsLister, actionApplier, childAction, current));
                 }
             }
         }
