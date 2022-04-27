@@ -23,7 +23,7 @@ public class ListActions implements IListActions {
             for (int y = 0; y < board.length; y++)
                 for (int x = 0; x < board[0].length; x++) {
                     Pawn pawn = board[y][x];
-                    if (pawn == correctPawn) {
+                    if (pawn == correctPawn || (correctPawn.equals(Pawn.WHITE) && pawn.equals(Pawn.KING))) {
                         out.addAll(checkPawnMoves(x, y, board.length, board.length, state));
                     }
                 }

@@ -79,3 +79,8 @@ Opzione 1:
 
 * Tracciare Action durante alpha-beta per evitare loop finale
     * bestValue oggetto con double e action
+
+## Migliorie euristica
+
+* Aggiungere parametro "neri vicino al re"
+* Aumentare di molto peso delle vie libere del re
