@@ -7,9 +7,18 @@ import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IMinMax;
 
 public class MinMaxAlphaBeta implements IMinMax {
+    private static final boolean DEBUG_MODE = true;
+
+    private boolean verbose = DEBUG_MODE && DTConstants.DEBUG_MODE;
+    private int debugCounter = 0;
 
     @Override
     public Action chooseAction(TablutTreeNode tree, IHeuristic heuristic) {
+        if (verbose) {
+            System.out.println("Inizio algoritmo alpha-beta...");
+            debugCounter = 0;
+        }
+
         /*
         per ogni figlio del primo nodo:
             usa alpha beta per trovare il punteggio migliore che ottieni su quella strada
@@ -18,8 +27,9 @@ public class MinMaxAlphaBeta implements IMinMax {
         double bestOverall = minmax(tree, 0, true, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, heuristic);
         Action action = null;
 
-        if (DTConstants.DEBUG_MODE) {
-            System.out.println(String.format("Punteggio euristico mosse (tot mosse: %d):", tree.getChildren().size()));
+        if (verbose) {
+            System.out.println(String.format("Alpha-beta eseguito in %d ricorsioni", debugCounter));
+            System.out.println(String.format("Punteggio euristico prime mosse (tot mosse: %d):", tree.getChildren().size()));
             for (TablutTreeNode child : tree.getChildren()) {
                 System.out.println(String.format(
                     "\t%s -> %s: %s", 
@@ -33,7 +43,7 @@ public class MinMaxAlphaBeta implements IMinMax {
         for (TablutTreeNode child : tree.getChildren()) {
             if (child.hasValue() && child.getValue() == bestOverall) {
                 action = child.getAction();
-                if (DTConstants.DEBUG_MODE) {
+                if (verbose) {
                     System.out.println(String.format("Scelta azione con punteggio %f: %s -> %s", bestOverall, action.getFrom(), action.getTo()));
                 }
                 break;
@@ -45,7 +55,7 @@ public class MinMaxAlphaBeta implements IMinMax {
             Random random = new Random();
             random.setSeed(System.currentTimeMillis());
             action = tree.getChildren().get(random.nextInt(tree.getChildren().size())).getAction();
-            if (DTConstants.DEBUG_MODE) {
+            if (verbose) {
                 System.err.println(String.format("Oh no, sto andando a caso: %s -> %s", action.getFrom(), action.getTo()));
             }
         }
@@ -79,14 +89,17 @@ public class MinMaxAlphaBeta implements IMinMax {
             return bestVal
         */
 
-        if (DTConstants.DEBUG_MODE) {
-            System.out.println(String.format("%d | Running for node with %d children %s", 
-                depth, node.getChildren().size(), node.toStringTrace()));
+        if (verbose) {
+            debugCounter++;
+            if (depth <= 1 || debugCounter % 1000 == 0) {
+                System.out.println(String.format("%d | Running for node with %d children %s", 
+                    depth, node.getChildren().size(), node.toStringTrace()));
+            }
         }
 
-        if (node.isLeaf()) {
+        if (node.isLeaf() && debugCounter % 1000 == 0) {
             double val = heuristic.heuristic(node.getState());
-            if (DTConstants.DEBUG_MODE) {
+            if (verbose) {
                 System.out.println(String.format("--> %d | Ran heuristic for %s: %f", depth, node, val));
             }
             return val;
@@ -99,7 +112,7 @@ public class MinMaxAlphaBeta implements IMinMax {
                 double val = minmax(child, depth + 1, false, alpha, beta, heuristic);
                 if (val != bestVal) {
                     bestVal = Math.max(val, bestVal);
-                    if (DTConstants.DEBUG_MODE && node.getAction() != null) {
+                    if (verbose && (depth <= 1 || debugCounter % 1000 == 0)) {
                         System.out.println(String.format("%d | Setting value of node %s to %f", 
                             depth, node, bestVal));
                     }
@@ -116,7 +129,7 @@ public class MinMaxAlphaBeta implements IMinMax {
                 double val = minmax(child, depth + 1, true, alpha, beta, heuristic);
                 if (val != bestVal) {
                     bestVal = Math.min(val, bestVal);
-                    if (DTConstants.DEBUG_MODE && node.getAction() != null) {
+                    if (verbose && (depth <= 1 || debugCounter % 1000 == 0)) {
                         System.out.println(String.format("%d | Setting value of node %s to %f", 
                             depth, node, bestVal));
                     }

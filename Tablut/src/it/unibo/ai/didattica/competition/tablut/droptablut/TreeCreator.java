@@ -12,17 +12,27 @@ import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IListActio
 
 
 public class TreeCreator implements ICreateTree {
-    private int state =0;
+    private static final boolean DEBUG_MODE = true;
 
+    private int debugCounter = 0;
+    private boolean verbose = DEBUG_MODE && DTConstants.DEBUG_MODE;
 
     @Override
     public TablutTreeNode generateTree(State fromState, int depth, 
             IListActions validActionsLister,
             IApplyAction actionApplier) {
-        if (DTConstants.DEBUG_MODE) {
+        if (verbose) {
             System.out.println(String.format("Start tree creation"));
+            debugCounter = 0;
         }
-        return generateTreeRec(fromState, depth, validActionsLister, actionApplier, null, null);
+
+        TablutTreeNode out = generateTreeRec(fromState, depth, validActionsLister, actionApplier, null, null);
+
+        if (verbose) {
+            System.out.println(String.format("Recursive function calls: %d", debugCounter));
+        }
+
+        return out;
     }
 
     public TablutTreeNode generateTreeRec(State fromState, int depth, 
@@ -30,13 +40,13 @@ public class TreeCreator implements ICreateTree {
     Action action, TablutTreeNode parent) {
         TablutTreeNode current = new TablutTreeNode(fromState, action, parent);
 
-        if (DTConstants.DEBUG_MODE || state %100000 ==0) {
-            System.out.println(String.format("\t%d | %s: gen tree -- state: %d", depth, current, state));
+        if (verbose && debugCounter % 100000 == 0) {
+            System.out.println(String.format("\t%d | %s: gen tree -- counter: %d", depth, current, debugCounter));
         }
 
         if (depth > 0) {
             List<Action> possibleActions = validActionsLister.getValidActions(fromState);
-            if (DTConstants.DEBUG_MODE ) {
+            if (verbose && debugCounter % 10000 == 0) {
                 System.out.println(String.format("\t%d | %s: child actions %d", depth, current, possibleActions.size()));
             }
 
@@ -50,7 +60,10 @@ public class TreeCreator implements ICreateTree {
                     current.getChildren().add(new TablutTreeNode(childState, childAction, current));
 
                 } else {
-                    state++;
+                    if (verbose) {
+                        debugCounter++;
+                    }
+
                     current.getChildren().add(generateTreeRec(childState, depth - 1, validActionsLister, actionApplier, childAction, current));
                 }
             }
