@@ -9,7 +9,11 @@ import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IApplyActi
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.ICreateTree;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IListActions;
 
+
+
 public class TreeCreator implements ICreateTree {
+    private int state =0;
+
 
     @Override
     public TablutTreeNode generateTree(State fromState, int depth, 
@@ -26,13 +30,15 @@ public class TreeCreator implements ICreateTree {
     Action action, TablutTreeNode parent) {
         TablutTreeNode current = new TablutTreeNode(fromState, action, parent);
 
-        if (DTConstants.DEBUG_MODE) {
-            System.out.println(String.format("\t%d | %s: gen tree", depth, current));
+        if (DTConstants.DEBUG_MODE || state %100000 ==0) {
+            System.out.println(String.format("\t%d | %s: gen tree -- state: %d", depth, current, state));
         }
 
         if (depth > 0) {
             List<Action> possibleActions = validActionsLister.getValidActions(fromState);
-            System.out.println(String.format("\t%d | %s: child actions %d", depth, current, possibleActions.size()));
+            if (DTConstants.DEBUG_MODE ) {
+                System.out.println(String.format("\t%d | %s: child actions %d", depth, current, possibleActions.size()));
+            }
 
             for (Action childAction : possibleActions) {
                 State childState = actionApplier.applyAction(fromState, childAction);
@@ -42,7 +48,9 @@ public class TreeCreator implements ICreateTree {
                     ) 
                 {
                     current.getChildren().add(new TablutTreeNode(childState, childAction, current));
+
                 } else {
+                    state++;
                     current.getChildren().add(generateTreeRec(childState, depth - 1, validActionsLister, actionApplier, childAction, current));
                 }
             }

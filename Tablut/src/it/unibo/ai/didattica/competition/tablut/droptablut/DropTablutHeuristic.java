@@ -73,11 +73,11 @@ public class DropTablutHeuristic implements IHeuristic {
     }
 
     private double getWhiteScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles) {
-        return numBlack * -0.5 + numWhite      + numFreeDirections *  5; // + numObstacles * -1;
+        return numBlack * -0.5 + numWhite      + numFreeDirections *  20; // + numObstacles * -1;
     }
 
     private double getBlackScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles) {
-        return numBlack *  0.5 + numWhite * -1 + numFreeDirections * -5; // + numObstacles;
+        return numBlack *  0.5 + numWhite * -1 + numFreeDirections * -20; // + numObstacles;
     }
 
     private int countKingObstacles(State state, Direction dir, int kingX, int kingY) {
@@ -88,7 +88,7 @@ public class DropTablutHeuristic implements IHeuristic {
             for (int x = kingX - 1; x >= 0; x--) {
                 boolean isEmpty = board[kingY][x] == Pawn.EMPTY;
                 // Controlla se è un accampamento
-                if (isEmpty && DTConstants.citadels.contains(state.getBox(x, kingY))) {
+                if (isEmpty && DTConstants.citadels.contains(state.getBox(kingY, x))) {
                     isEmpty = false;
                 }
 
@@ -100,7 +100,7 @@ public class DropTablutHeuristic implements IHeuristic {
             for (int x = kingX + 1; x < 9; x++) {
                 boolean isEmpty = board[kingY][x] == Pawn.EMPTY;
                 // Controlla se è un accampamento
-                if (isEmpty && DTConstants.citadels.contains(state.getBox(x, kingY))) {
+                if (isEmpty && DTConstants.citadels.contains(state.getBox(kingY, x))) {
                     isEmpty = false;
                 }
 
