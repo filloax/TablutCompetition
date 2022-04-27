@@ -77,10 +77,11 @@ Opzione 1:
 
 ## Possibili ottimizzazioni
 
+* Generare albero solo per rami necessari, quindi dentro alpha-beta
 * Tracciare Action durante alpha-beta per evitare loop finale
     * bestValue oggetto con double e action
 
 ## Migliorie euristica
 
 * Aggiungere parametro "neri vicino al re"
-* Aumentare di molto peso delle vie libere del re
+* ✔️ Aumentare di molto peso delle vie libere del re

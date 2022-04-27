@@ -9,8 +9,9 @@ import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IMinMax;
 
 public class MinMaxAlphaBeta implements IMinMax {
-    static boolean DEBUG_MODE = false;
-    static boolean DEBUG_PRINT_ALL = false;
+    static boolean DEBUG_MODE = true;
+    static boolean DEBUG_PRINT_ALL = true;
+    static boolean DEBUG_PRINT_INNER = false;
 
     public static final double BRANCH_LENGTH_WEIGHT = 0.001;
 
@@ -33,7 +34,7 @@ public class MinMaxAlphaBeta implements IMinMax {
         Action action = null;
 
         if (verbose) {
-            System.out.println(String.format("Alpha-beta eseguito in %d ricorsioni", debugCounter));
+            System.out.println(String.format("Alpha-beta eseguito in %d ricorsioni, bestOverall: %f", debugCounter, bestOverall));
             System.out.println(String.format("Punteggio euristico prime mosse (tot mosse: %d):", tree.getChildren().size()));
             for (TablutTreeNode child : tree.getChildren()) {
                 System.out.println(String.format(
@@ -46,9 +47,9 @@ public class MinMaxAlphaBeta implements IMinMax {
         }
 
         List<Action> bestMoves = tree.getChildren().stream()
-            .filter(node -> node.hasValue() && node.getValue() == bestOverall)
-            .map(node -> node.getAction())
-            .collect(Collectors.toList());
+                .filter(node -> node.hasValue() && equalsPrecision(bestOverall, node.getValue(), 0.00001))
+                .map(TablutTreeNode::getAction)
+                .toList();
 
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
@@ -107,7 +108,7 @@ public class MinMaxAlphaBeta implements IMinMax {
 
         if (verbose) {
             debugCounter++;
-            if (depth <= 1 || debugCounter % 1000 == 0 || DEBUG_PRINT_ALL) {
+            if ((depth <= 1 || debugCounter % 1000 == 0 || DEBUG_PRINT_ALL) && DEBUG_PRINT_INNER) {
                 System.out.println(String.format("%d | Running for node with %d children %s", 
                     depth, node.getChildren().size(), node.toStringTrace()));
             }
@@ -118,9 +119,12 @@ public class MinMaxAlphaBeta implements IMinMax {
             if (prioritizeShorterBranch)
                 val = val - BRANCH_LENGTH_WEIGHT * depth; // preferisci rami più corti
             
-            if (verbose && (debugCounter % 1000 == 0 || DEBUG_PRINT_ALL)) {
+            if (verbose && (debugCounter % 1000 == 0 || DEBUG_PRINT_ALL) && DEBUG_PRINT_INNER) {
                 System.out.println(String.format("--> %d | Ran heuristic for %s: %f", depth, node, val));
             }
+
+            node.setValue(val);
+
             return val;
         }
 
@@ -131,7 +135,7 @@ public class MinMaxAlphaBeta implements IMinMax {
                 double val = minmax(child, depth + 1, false, alpha, beta, heuristic, prioritizeShorterBranch);
                 if (val != bestVal) {
                     bestVal = Math.max(val, bestVal);
-                    if (verbose && (depth <= 1 || debugCounter % 1000 == 0 || DEBUG_PRINT_ALL)) {
+                    if (verbose && (depth <= 1 || debugCounter % 1000 == 0 || DEBUG_PRINT_ALL) && DEBUG_PRINT_INNER) {
                         System.out.println(String.format("%d | Setting value of node %s to %f", 
                             depth, node, bestVal));
                     }
@@ -148,7 +152,7 @@ public class MinMaxAlphaBeta implements IMinMax {
                 double val = minmax(child, depth + 1, true, alpha, beta, heuristic, prioritizeShorterBranch);
                 if (val != bestVal) {
                     bestVal = Math.min(val, bestVal);
-                    if (verbose && (depth <= 1 || debugCounter % 1000 == 0)) {
+                    if (verbose && (depth <= 1 || debugCounter % 1000 == 0) && DEBUG_PRINT_INNER) {
                         System.out.println(String.format("%d | Setting value of node %s to %f", 
                             depth, node, bestVal));
                     }
@@ -161,5 +165,8 @@ public class MinMaxAlphaBeta implements IMinMax {
             return bestVal;
         }
     }
-    
+
+    private boolean equalsPrecision(double d1, double d2, double prec) {
+        return Math.abs(d1 - d2) < prec;
+    }
 }

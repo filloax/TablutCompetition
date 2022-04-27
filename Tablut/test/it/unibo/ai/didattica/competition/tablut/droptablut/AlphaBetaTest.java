@@ -26,7 +26,8 @@ public class AlphaBetaTest {
     public void before() {
         MinMaxAlphaBeta.DEBUG_MODE = true;
         MinMaxAlphaBeta.DEBUG_PRINT_ALL = true;
-        
+        MinMaxAlphaBeta.DEBUG_PRINT_INNER = true;
+
         minmaxer = new MinMaxAlphaBeta();
         stateHeuristicMap = new HashMap<>();
         heuristicStateMap = new HashMap<>();
