@@ -18,15 +18,15 @@ public class DropTablutHeuristic implements IHeuristic {
         Turn turn = state.getTurn();
         if (turn.equals(Turn.BLACKWIN)) {
             if (isWhite) {
-                return Double.NEGATIVE_INFINITY;
+                return -1000;//Double.NEGATIVE_INFINITY;
             } else {
-                return Double.POSITIVE_INFINITY;
+                return 1000;//Double.POSITIVE_INFINITY;
             }
         } else if (turn.equals(Turn.WHITEWIN)) {
             if (isWhite) {
-                return Double.POSITIVE_INFINITY;
+                return 1000;//Double.POSITIVE_INFINITY;
             } else {
-                return Double.NEGATIVE_INFINITY;
+                return -1000;//Double.NEGATIVE_INFINITY;
             }
         // } else if (turn.equals(Turn.DRAW)) {
         //     if (isWhite) {
