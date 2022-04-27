@@ -1,14 +1,18 @@
 package it.unibo.ai.didattica.competition.tablut.droptablut;
 
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
-import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IMinMax;
 
 public class MinMaxAlphaBeta implements IMinMax {
-    private static final boolean DEBUG_MODE = false;
+    static boolean DEBUG_MODE = false;
+    static boolean DEBUG_PRINT_ALL = false;
+
+    public static final double BRANCH_LENGTH_WEIGHT = 0.001;
 
     private boolean verbose = DEBUG_MODE && DTConstants.DEBUG_MODE;
     private int debugCounter = 0;
@@ -41,29 +45,40 @@ public class MinMaxAlphaBeta implements IMinMax {
             }
         }
 
-        for (TablutTreeNode child : tree.getChildren()) {
-            if (child.hasValue() && child.getValue() == bestOverall) {
-                action = child.getAction();
-                if (verbose) {
-                    System.out.println(String.format("Scelta azione con punteggio %f: %s -> %s", bestOverall, action.getFrom(), action.getTo()));
-                }
-                break;
+        List<Action> bestMoves = tree.getChildren().stream()
+            .filter(node -> node.hasValue() && node.getValue() == bestOverall)
+            .map(node -> node.getAction())
+            .collect(Collectors.toList());
+
+        Random random = new Random();
+        random.setSeed(System.currentTimeMillis());
+
+        // Usa la mossa migliore, o una a caso tra le migliori
+        // nel caso ce ne siano a pari merito
+        if (!bestMoves.isEmpty()) {
+            action = bestMoves.get(random.nextInt(bestMoves.size()));
+            if (verbose) {
+                System.out.println(String.format("Scelta azione con punteggio %f: %s -> %s (tra %d possibili)", bestOverall, action.getFrom(), action.getTo(), bestMoves.size()));
             }
         }
 
         // Non trovato, vai a caso
         if (action == null) {
-            Random random = new Random();
-            random.setSeed(System.currentTimeMillis());
             action = tree.getChildren().get(random.nextInt(tree.getChildren().size())).getAction();
             if (verbose) {
-                System.err.println(String.format("Oh no, sto andando a caso: %s -> %s", action.getFrom(), action.getTo()));
+                System.err.println(String.format("warning: Oh no, sto andando a caso: %s -> %s", action.getFrom(), action.getTo()));
+                System.out.println(String.format("Oh no, sto andando a caso: %s -> %s", action.getFrom(), action.getTo()));
             }
         }
+
         return action;
     }
 
     public double minmax(TablutTreeNode node, int depth, boolean isMaxPlayer, double alpha, double beta, IHeuristic heuristic) {
+        return minmax(node, depth, isMaxPlayer, alpha, beta, heuristic, true);
+    }
+
+    public double minmax(TablutTreeNode node, int depth, boolean isMaxPlayer, double alpha, double beta, IHeuristic heuristic, boolean prioritizeShorterBranch) {
         /*
         function minimax(node, depth, isMaximizingPlayer, alpha, beta):
             if node is a leaf node :
@@ -92,15 +107,18 @@ public class MinMaxAlphaBeta implements IMinMax {
 
         if (verbose) {
             debugCounter++;
-            if (depth <= 1 || debugCounter % 1000 == 0) {
+            if (depth <= 1 || debugCounter % 1000 == 0 || DEBUG_PRINT_ALL) {
                 System.out.println(String.format("%d | Running for node with %d children %s", 
                     depth, node.getChildren().size(), node.toStringTrace()));
             }
         }
 
-        if (node.isLeaf() ) {
+        if (node.isLeaf()) {
             double val = heuristic.heuristic(node.getState());
-            if (verbose || node.getState().getTurn().equals(Turn.WHITEWIN)) {
+            if (prioritizeShorterBranch)
+                val = val - BRANCH_LENGTH_WEIGHT * depth; // preferisci rami più corti
+            
+            if (verbose && (debugCounter % 1000 == 0 || DEBUG_PRINT_ALL)) {
                 System.out.println(String.format("--> %d | Ran heuristic for %s: %f", depth, node, val));
             }
             return val;
@@ -110,10 +128,10 @@ public class MinMaxAlphaBeta implements IMinMax {
         if (isMaxPlayer) {
             bestVal = Double.NEGATIVE_INFINITY;
             for (TablutTreeNode child : node.getChildren()) {
-                double val = minmax(child, depth + 1, false, alpha, beta, heuristic);
+                double val = minmax(child, depth + 1, false, alpha, beta, heuristic, prioritizeShorterBranch);
                 if (val != bestVal) {
                     bestVal = Math.max(val, bestVal);
-                    if (verbose && (depth <= 1 || debugCounter % 1000 == 0)) {
+                    if (verbose && (depth <= 1 || debugCounter % 1000 == 0 || DEBUG_PRINT_ALL)) {
                         System.out.println(String.format("%d | Setting value of node %s to %f", 
                             depth, node, bestVal));
                     }
@@ -127,7 +145,7 @@ public class MinMaxAlphaBeta implements IMinMax {
         } else {
             bestVal = Double.POSITIVE_INFINITY;
             for (TablutTreeNode child : node.getChildren()) {
-                double val = minmax(child, depth + 1, true, alpha, beta, heuristic);
+                double val = minmax(child, depth + 1, true, alpha, beta, heuristic, prioritizeShorterBranch);
                 if (val != bestVal) {
                     bestVal = Math.min(val, bestVal);
                     if (verbose && (depth <= 1 || debugCounter % 1000 == 0)) {
