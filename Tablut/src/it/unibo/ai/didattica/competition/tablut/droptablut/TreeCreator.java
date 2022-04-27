@@ -58,6 +58,10 @@ public class TreeCreator implements ICreateTree {
                     ) 
                 {
                     current.getChildren().add(new TablutTreeNode(childState, childAction, current));
+                    if (childState.getTurn() == Turn.WHITEWIN && depth==3){
+                        System.out.println(String.format("\t%d | ho trovato una vittoria bianca con la mossa %s dallo state:\n ", depth, current));
+                        System.out.println(childState);
+                    }
 
                 } else {
                     if (verbose) {

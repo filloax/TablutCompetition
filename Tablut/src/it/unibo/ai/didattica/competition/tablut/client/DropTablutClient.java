@@ -44,7 +44,7 @@ public class DropTablutClient extends TablutClient {
 
     @Override
     public void run() {
-        System.out.println("You are player " + this.getPlayer().toString() + "!");
+        //System.out.println("You are player " + this.getPlayer().toString() + "!");
 		Action action;
 		try {
 			this.declareName();

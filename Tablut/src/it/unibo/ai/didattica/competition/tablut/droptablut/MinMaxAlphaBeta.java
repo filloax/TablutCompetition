@@ -3,11 +3,12 @@ package it.unibo.ai.didattica.competition.tablut.droptablut;
 import java.util.Random;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
+import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IMinMax;
 
 public class MinMaxAlphaBeta implements IMinMax {
-    private static final boolean DEBUG_MODE = true;
+    private static final boolean DEBUG_MODE = false;
 
     private boolean verbose = DEBUG_MODE && DTConstants.DEBUG_MODE;
     private int debugCounter = 0;
@@ -97,9 +98,9 @@ public class MinMaxAlphaBeta implements IMinMax {
             }
         }
 
-        if (node.isLeaf() && debugCounter % 1000 == 0) {
+        if (node.isLeaf() ) {
             double val = heuristic.heuristic(node.getState());
-            if (verbose) {
+            if (verbose || node.getState().getTurn().equals(Turn.WHITEWIN)) {
                 System.out.println(String.format("--> %d | Ran heuristic for %s: %f", depth, node, val));
             }
             return val;

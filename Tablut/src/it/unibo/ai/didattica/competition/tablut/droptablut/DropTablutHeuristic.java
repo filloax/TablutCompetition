@@ -20,11 +20,11 @@ public class DropTablutHeuristic implements IHeuristic {
             if (isWhite) {
                 return -1000;//Double.NEGATIVE_INFINITY;
             } else {
-                return 1000;//Double.POSITIVE_INFINITY;
+                return 1000; //Double.POSITIVE_INFINITY;
             }
         } else if (turn.equals(Turn.WHITEWIN)) {
             if (isWhite) {
-                return 1000;//Double.POSITIVE_INFINITY;
+                return 1000; //Double.POSITIVE_INFINITY;
             } else {
                 return -1000;//Double.NEGATIVE_INFINITY;
             }
