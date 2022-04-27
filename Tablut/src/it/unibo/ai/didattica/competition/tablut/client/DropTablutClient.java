@@ -106,7 +106,7 @@ public class DropTablutClient extends TablutClient {
 		DropTablutClient client = new DropTablutClient(
             args[0], 
             "DropTablut",
-            5,
+            3,
             new ListActions(),
             new TreeCreator(),
             new DropTablutHeuristic(color),
