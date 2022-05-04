@@ -128,7 +128,7 @@ public class DropTablutClient extends TablutClient {
         
         System.out.println("Selected this: " + args[0]);
 
-        Turn color = ((args[0].equals("WHITE")) ? Turn.WHITE : Turn.BLACK);
+        Turn color = ((args[0].toUpperCase().equals("WHITE")) ? Turn.WHITE : Turn.BLACK);
 
         DropTablutClient client = new DropTablutClient(
             args[0], 
