@@ -1,7 +1,6 @@
 logs/
 garbage/
 build/
-!DropTablutClient.jar
 
 # Created by https://www.toptal.com/developers/gitignore/api/java,intellij,eclipse
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,intellij,eclipse
@@ -196,6 +195,9 @@ fabric.properties
 *.zip
 *.tar.gz
 *.rar
+
+#EXCEPTION
+!DropTablutClient.jar
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
