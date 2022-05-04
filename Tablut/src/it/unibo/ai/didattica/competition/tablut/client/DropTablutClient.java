@@ -40,6 +40,19 @@ public class DropTablutClient extends TablutClient {
         this.minMaxer = minMaxer;
         this.actionApplier = actionApplier;
     }
+    public DropTablutClient(String player, String name, int timeout, String ipAddress, 
+            int depth,
+            IListActions actionLister, ICreateTree treeCreator, IHeuristic heuristic, 
+            IMinMax minMaxer, IApplyAction actionApplier)
+            throws UnknownHostException, IOException {
+        super(player, name, timeout, ipAddress);
+        this.depth = depth;
+        this.actionLister = actionLister;
+        this.treeCreator = treeCreator;
+        this.heuristic = heuristic;
+        this.minMaxer = minMaxer;
+        this.actionApplier = actionApplier;
+    }
 
 
     @Override
@@ -99,13 +112,29 @@ public class DropTablutClient extends TablutClient {
 			System.out.println("You must specify which player you are (WHITE or BLACK)!");
 			System.exit(-1);
 		}
-		System.out.println("Selected this: " + args[0]);
+        
+        int timeout = 60;
+        String address = "localhost";
+
+        if (args.length ==3){
+            try {
+                timeout=Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                System.err.print("Il secondo argomento deve essere un intero");
+                System.exit(-1);
+            }
+            address=args[2];
+        }
+        
+        System.out.println("Selected this: " + args[0]);
 
         Turn color = ((args[0].equals("WHITE")) ? Turn.WHITE : Turn.BLACK);
 
-		DropTablutClient client = new DropTablutClient(
+        DropTablutClient client = new DropTablutClient(
             args[0], 
             "DropTablut",
+            timeout,
+            address,
             3,
             new ListActions(),
             new TreeCreator(),
@@ -114,7 +143,8 @@ public class DropTablutClient extends TablutClient {
             new ApplyAction()
         );
 
-		client.run();
+        client.run();
+        
 	}
 
     public IListActions getActionLister() {
