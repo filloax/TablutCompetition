@@ -1,7 +1,9 @@
 package it.unibo.ai.didattica.competition.tablut.droptablut;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
@@ -47,9 +49,10 @@ public class MinMaxAlphaBeta implements IMinMax {
         }
 
         List<Action> bestMoves = tree.getChildren().stream()
-                .filter(node -> node.hasValue() && equalsPrecision(bestOverall, node.getValue(), 0.00001))
-                .map(TablutTreeNode::getAction)
-                .toList();
+                                            .filter(node -> node.hasValue() && equalsPrecision(bestOverall, node.getValue(), 0.00001))
+                                            .map(TablutTreeNode::getAction)
+                                            .collect(Collectors.toList());
+        
 
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());

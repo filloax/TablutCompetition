@@ -64,20 +64,54 @@ public class DropTablutHeuristic implements IHeuristic {
                 numFreeDirections++;
             }
         }
+        float capturePct = calcPct(kingX,kingY,state);
+
 
         if (isWhite) {
-            return getWhiteScore(numWhite, numBlack, numFreeDirections, numObstacles);
+            return getWhiteScore(numWhite, numBlack, numFreeDirections, numObstacles, capturePct);
         } else {
-            return getBlackScore(numWhite, numBlack, numFreeDirections, numObstacles);
+            return getBlackScore(numWhite, numBlack, numFreeDirections, numObstacles, capturePct);
         }
     }
 
-    private double getWhiteScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles) {
-        return numBlack * -0.5 + numWhite      + numFreeDirections *  20; // + numObstacles * -1;
+    private float calcPct(int kingX, int kingY,State state) {
+        float pct=0.0f;
+        Pawn board[][] = state.getBoard();
+
+        if(board[kingY][kingX] == Pawn.THRONE){ //sul trono
+            pct = (board[kingY+1][kingX]==Pawn.BLACK?1:0) *0.25f
+                + (board[kingY-1][kingX]==Pawn.BLACK?1:0) *0.25f
+                + (board[kingY][kingX+1]==Pawn.BLACK?1:0) *0.25f
+                + (board[kingY][kingX-1]==Pawn.BLACK?1:0) *0.25f;
+        }
+        else if(board[kingY+1][kingX]==Pawn.THRONE ||
+                board[kingY-1][kingX]==Pawn.THRONE ||
+                board[kingY][kingX+1]==Pawn.THRONE ||
+                board[kingY][kingX-1]==Pawn.THRONE){ //adiacente al trono
+            pct = (board[kingY+1][kingX]==Pawn.BLACK?1:0) *0.33f
+                + (board[kingY-1][kingX]==Pawn.BLACK?1:0) *0.33f
+                + (board[kingY][kingX+1]==Pawn.BLACK?1:0) *0.33f
+                + (board[kingY][kingX-1]==Pawn.BLACK?1:0) *0.33f;
+        }
+        else { //non adiacente al trono
+            pct = (board[kingY+1][kingX]==Pawn.BLACK?1:0) *0.50f
+                + (board[kingY-1][kingX]==Pawn.BLACK?1:0) *0.50f
+                + (board[kingY][kingX+1]==Pawn.BLACK?1:0) *0.50f
+                + (board[kingY][kingX-1]==Pawn.BLACK?1:0) *0.50f;
+        }
+                
+        return pct;
     }
 
-    private double getBlackScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles) {
-        return numBlack *  0.5 + numWhite * -1 + numFreeDirections * -20; // + numObstacles;
+
+
+
+    private double getWhiteScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles,float capturePct) {
+        return numBlack * -0.5 + numWhite      + numFreeDirections *  20 - capturePct * 10; // + numObstacles * -1;
+    }
+
+    private double getBlackScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles, float capturePct) {
+        return numBlack *  0.5 + numWhite * -1 + numFreeDirections * -10 + capturePct * 20; // + numObstacles;
     }
 
     private int countKingObstacles(State state, Direction dir, int kingX, int kingY) {

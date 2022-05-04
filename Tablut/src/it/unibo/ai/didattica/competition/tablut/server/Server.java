@@ -633,7 +633,7 @@ public class Server implements Runnable {
 				loggSys.warning("Chiusura sistema");
 				System.exit(1);
 			}
-
+			
 
 			switch (state.getTurn()) {
 			case WHITE:
@@ -661,10 +661,18 @@ public class Server implements Runnable {
 				endgame = true;
 				break;
 			default:
+			
 				loggSys.warning("Chiusura sistema");
 				System.exit(4);
 			}
 
+		}
+		
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		System.exit(0);
