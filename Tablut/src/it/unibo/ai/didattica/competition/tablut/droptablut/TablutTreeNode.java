@@ -23,6 +23,10 @@ public class TablutTreeNode {
         this.value = Optional.empty();
     }
 
+    public static TablutTreeNode createNoChildren(State state, Action action) {
+        return new TablutTreeNode(state, action, null, null);
+    }
+
     public TablutTreeNode(State state, Action action, TablutTreeNode parent) {
         this(state, action, new ArrayList<>(), parent);
     }

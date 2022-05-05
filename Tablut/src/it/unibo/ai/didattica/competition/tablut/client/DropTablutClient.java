@@ -19,6 +19,7 @@ public class DropTablutClient extends TablutClient {
     private IMinMax minMaxer;
     private int depth;
 
+    public static boolean USE_OPT = true;
 
     public DropTablutClient(String player, String name,
                             int depth,
@@ -75,9 +76,17 @@ public class DropTablutClient extends TablutClient {
                 if (this.getCurrentState().getTurn().equals(myColor)) {
                     System.out.println("Our turn!");
 
-
-                    TablutTreeNode tree = treeCreator.generateTree(this.getCurrentState(), depth, actionHandler);
-                    action = minMaxer.chooseAction(tree, heuristic);
+                    if (minMaxer instanceof MinMaxAlphaBetaOpt) {
+                        System.out.println("Using optimized!");
+                        TablutTreeNode firstNode = TablutTreeNode.createNoChildren(this.getCurrentState(), null);
+                        action = minMaxer.chooseAction(firstNode, heuristic);
+                    } else if (minMaxer instanceof MinMaxAlphaBeta) {
+                        System.out.println("Using not optimized!");
+                        TablutTreeNode tree = treeCreator.generateTree(this.getCurrentState(), depth, actionHandler);
+                        action = minMaxer.chooseAction(tree, heuristic);
+                    } else {
+                        throw new IllegalStateException("argh");
+                    }
 
                     System.out.println("Mossa scelta: " + action);
 
@@ -140,6 +149,14 @@ public class DropTablutClient extends TablutClient {
 
         Turn color = ((args[0].toUpperCase().equals("WHITE")) ? Turn.WHITE : Turn.BLACK);
 
+        IMinMax minmaxer;
+
+        if (USE_OPT) {
+            minmaxer = new MinMaxAlphaBetaOpt(depth, new ActionHandler());
+        } else {
+            minmaxer = new MinMaxAlphaBeta();
+        }
+
         DropTablutClient client = new DropTablutClient(
             args[0], 
             "DropTablut",
@@ -149,7 +166,7 @@ public class DropTablutClient extends TablutClient {
             new ActionHandler(),
             new TreeCreator(),
             new DropTablutHeuristic(color),
-            new MinMaxAlphaBeta()
+            minmaxer
         );
 
         client.run();

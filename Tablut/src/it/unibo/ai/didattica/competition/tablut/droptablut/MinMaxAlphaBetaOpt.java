@@ -1,6 +1,7 @@
 package it.unibo.ai.didattica.competition.tablut.droptablut;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
+import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IActionHandler;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IMinMax;
@@ -19,6 +20,16 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
     private boolean verbose = DEBUG_MODE && DTConstants.DEBUG_MODE;
     private int debugCounter = 0;
 
+    private int maxDepth;
+    private IActionHandler actionHandler;
+    private TablutTreeNode bestNode;
+
+    public MinMaxAlphaBetaOpt(int maxDepth, IActionHandler actionHandler) {
+        this.maxDepth = maxDepth;
+        this.actionHandler = actionHandler;
+        this.bestNode = null;
+    }
+
     @Override
     public Action chooseAction(TablutTreeNode tree, IHeuristic heuristic) {
         if (verbose) {
@@ -31,43 +42,27 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
             usa alpha beta per trovare il punteggio migliore che ottieni su quella strada
         
         */
+        bestNode = null;
         double bestOverall = minmax(tree, 0, true, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, heuristic);
         Action action = null;
 
         if (verbose) {
             System.out.println(String.format("Alpha-beta eseguito in %d ricorsioni, bestOverall: %f", debugCounter, bestOverall));
-            System.out.println(String.format("Punteggio euristico prime mosse (tot mosse: %d):", tree.getChildren().size()));
-            for (TablutTreeNode child : tree.getChildren()) {
-                System.out.println(String.format(
-                    "\t%s -> %s: %s", 
-                    child.getAction().getFrom(),
-                    child.getAction().getTo(),
-                    (child.hasValue() ? child.getValue() : "skip")
-                ));
-            }
+            System.out.println(String.format("Nodo migliore: %s", bestNode));
         }
 
-        List<Action> bestMoves = tree.getChildren().stream()
-                                            .filter(node -> node.hasValue() && equalsPrecision(bestOverall, node.getValue(), 0.00001))
-                                            .map(TablutTreeNode::getAction)
-                                            .collect(Collectors.toList());
-        
-
-        Random random = new Random();
-        random.setSeed(System.currentTimeMillis());
-
-        // Usa la mossa migliore, o una a caso tra le migliori
-        // nel caso ce ne siano a pari merito
-        if (!bestMoves.isEmpty()) {
-            action = bestMoves.get(random.nextInt(bestMoves.size()));
-            if (verbose) {
-                System.out.println(String.format("Scelta azione con punteggio %f: %s -> %s (tra %d possibili)", bestOverall, action.getFrom(), action.getTo(), bestMoves.size()));
-            }
+        if (bestNode != null) {
+            action = bestNode.getAction();
+            System.out.println(String.format("Scelta azione con punteggio %f: %s -> %s", bestOverall, action.getFrom(), action.getTo()));
         }
 
-        // Non trovato, vai a caso
         if (action == null) {
-            action = tree.getChildren().get(random.nextInt(tree.getChildren().size())).getAction();
+            Random random = new Random();
+            random.setSeed(System.currentTimeMillis());
+
+            List<Action> validActions = actionHandler.getValidActions(tree.getState());
+
+            action = validActions.get(random.nextInt(validActions.size()));
             if (verbose) {
                 System.err.println(String.format("warning: Oh no, sto andando a caso: %s -> %s", action.getFrom(), action.getTo()));
                 System.out.println(String.format("Oh no, sto andando a caso: %s -> %s", action.getFrom(), action.getTo()));
@@ -116,7 +111,7 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
             }
         }
 
-        if (node.isLeaf() || node.getChildren().isEmpty()) {
+        if (node.isLeaf() || depth >= maxDepth) {
             double val = heuristic.heuristic(node.getState());
             if (prioritizeShorterBranch)
                 val = val - BRANCH_LENGTH_WEIGHT * depth; // preferisci rami più corti
@@ -125,15 +120,16 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
                 System.out.println(String.format("--> %d | Ran heuristic for %s: %f", depth, node, val));
             }
 
-            node.setValue(val);
-
             return val;
         }
 
         double bestVal;
         if (isMaxPlayer) {
             bestVal = Double.NEGATIVE_INFINITY;
-            for (TablutTreeNode child : node.getChildren()) {
+            List<Action> validActions = actionHandler.getValidActions(node.getState());
+            for (Action action : validActions) {
+                State state = actionHandler.applyAction(node.getState(), action);
+                TablutTreeNode child = TablutTreeNode.createNoChildren(state, action);
                 double val = minmax(child, depth + 1, false, alpha, beta, heuristic, prioritizeShorterBranch);
                 if (val != bestVal) {
                     bestVal = Math.max(val, bestVal);
@@ -141,7 +137,9 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
                         System.out.println(String.format("%d | Setting value of node %s to %f", 
                             depth, node, bestVal));
                     }
-                    node.setValue(bestVal);
+                    if (val == bestVal && depth == 1) {
+                        bestNode = child;
+                    }
                 }
                 alpha = Math.max(alpha, bestVal);
                 if (beta <= alpha) 
@@ -150,7 +148,10 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
             return bestVal;
         } else {
             bestVal = Double.POSITIVE_INFINITY;
-            for (TablutTreeNode child : node.getChildren()) {
+            List<Action> validActions = actionHandler.getValidActions(node.getState());
+            for (Action action : validActions) {
+                State state = actionHandler.applyAction(node.getState(), action);
+                TablutTreeNode child = TablutTreeNode.createNoChildren(state, action);
                 double val = minmax(child, depth + 1, true, alpha, beta, heuristic, prioritizeShorterBranch);
                 if (val != bestVal) {
                     bestVal = Math.min(val, bestVal);
@@ -158,7 +159,9 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
                         System.out.println(String.format("%d | Setting value of node %s to %f", 
                             depth, node, bestVal));
                     }
-                    node.setValue(bestVal);
+                    if (val == bestVal && depth == 1) {
+                        bestNode = child;
+                    }
                 }
                 beta = Math.min(beta, bestVal);
                 if (beta <= alpha) 
