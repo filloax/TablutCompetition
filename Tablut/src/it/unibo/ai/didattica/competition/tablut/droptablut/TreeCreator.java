@@ -5,10 +5,8 @@ import java.util.List;
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
-import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IApplyAction;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.ICreateTree;
-import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IListActions;
-
+import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IActionHandler;
 
 
 public class TreeCreator implements ICreateTree {
@@ -19,14 +17,13 @@ public class TreeCreator implements ICreateTree {
 
     @Override
     public TablutTreeNode generateTree(State fromState, int depth, 
-            IListActions validActionsLister,
-            IApplyAction actionApplier) {
+            IActionHandler actionHandler) {
         if (verbose) {
             System.out.println(String.format("Start tree creation"));
             debugCounter = 0;
         }
 
-        TablutTreeNode out = generateTreeRec(fromState, depth, validActionsLister, actionApplier, null, null);
+        TablutTreeNode out = generateTreeRec(fromState, depth, actionHandler, null, null);
 
         if (verbose) {
             System.out.println(String.format("Recursive function calls: %d", debugCounter));
@@ -35,9 +32,9 @@ public class TreeCreator implements ICreateTree {
         return out;
     }
 
-    public TablutTreeNode generateTreeRec(State fromState, int depth, 
-    IListActions validActionsLister, IApplyAction actionApplier, 
-    Action action, TablutTreeNode parent) {
+    public TablutTreeNode generateTreeRec(State fromState, int depth,
+                                          IActionHandler actionHandler,
+                                          Action action, TablutTreeNode parent) {
         TablutTreeNode current = new TablutTreeNode(fromState, action, parent);
 
         if (verbose && debugCounter % 100000 == 0) {
@@ -45,13 +42,13 @@ public class TreeCreator implements ICreateTree {
         }
 
         if (depth > 0) {
-            List<Action> possibleActions = validActionsLister.getValidActions(fromState);
+            List<Action> possibleActions = actionHandler.getValidActions(fromState);
             if (verbose && debugCounter % 10000 == 0) {
                 System.out.println(String.format("\t%d | %s: child actions %d", depth, current, possibleActions.size()));
             }
 
             for (Action childAction : possibleActions) {
-                State childState = actionApplier.applyAction(fromState, childAction);
+                State childState = actionHandler.applyAction(fromState, childAction);
                 if (   childState.getTurn() == Turn.BLACKWIN 
                     || childState.getTurn() == Turn.WHITEWIN
                     || childState.getTurn() == Turn.DRAW
@@ -68,7 +65,7 @@ public class TreeCreator implements ICreateTree {
                         debugCounter++;
                     }
 
-                    current.getChildren().add(generateTreeRec(childState, depth - 1, validActionsLister, actionApplier, childAction, current));
+                    current.getChildren().add(generateTreeRec(childState, depth - 1, actionHandler, childAction, current));
                 }
             }
         }

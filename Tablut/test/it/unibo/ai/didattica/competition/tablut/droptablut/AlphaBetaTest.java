@@ -3,7 +3,6 @@ package it.unibo.ai.didattica.competition.tablut.droptablut;
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.StateTablut;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic;
-import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IListActions;
 import org.junit.Before;
 import org.junit.Test;
 

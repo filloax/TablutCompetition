@@ -2,21 +2,21 @@ package it.unibo.ai.didattica.competition.tablut.droptablut;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State;
-import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IApplyAction;
+import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IActionHandler;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class ApplyActionTest {
-    IApplyAction actionApplier;
+    IActionHandler actionApplier;
 
     // In generale, si suppone che il controllo che la
     // mossa sia valida sia già stato fatto
 
     @Before
     public void before() {
-        actionApplier = new ApplyAction();
+        actionApplier = new ActionHandler();
     }
 
     @Test

@@ -6,52 +6,43 @@ import java.net.UnknownHostException;
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 import it.unibo.ai.didattica.competition.tablut.domain.StateTablut;
-import it.unibo.ai.didattica.competition.tablut.droptablut.ApplyAction;
-import it.unibo.ai.didattica.competition.tablut.droptablut.DropTablutHeuristic;
-import it.unibo.ai.didattica.competition.tablut.droptablut.ListActions;
-import it.unibo.ai.didattica.competition.tablut.droptablut.MinMaxAlphaBeta;
-import it.unibo.ai.didattica.competition.tablut.droptablut.TablutTreeNode;
-import it.unibo.ai.didattica.competition.tablut.droptablut.TreeCreator;
-import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IApplyAction;
+import it.unibo.ai.didattica.competition.tablut.droptablut.*;
+import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IActionHandler;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.ICreateTree;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic;
-import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IListActions;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IMinMax;
 
 public class DropTablutClient extends TablutClient {
-    private IListActions actionLister;
+    private IActionHandler actionHandler;
     private ICreateTree treeCreator;
     private IHeuristic heuristic;
     private IMinMax minMaxer;
-    private IApplyAction actionApplier;
     private int depth;
 
 
-    public DropTablutClient(String player, String name, 
-            int depth,
-            IListActions actionLister, ICreateTree treeCreator, IHeuristic heuristic, 
-            IMinMax minMaxer, IApplyAction actionApplier)
+    public DropTablutClient(String player, String name,
+                            int depth,
+                            IActionHandler actionHandler, ICreateTree treeCreator, IHeuristic heuristic,
+                            IMinMax minMaxer)
             throws UnknownHostException, IOException {
         super(player, name);
         this.depth = depth;
-        this.actionLister = actionLister;
+        this.actionHandler = actionHandler;
         this.treeCreator = treeCreator;
         this.heuristic = heuristic;
         this.minMaxer = minMaxer;
-        this.actionApplier = actionApplier;
     }
-    public DropTablutClient(String player, String name, int timeout, String ipAddress, 
-            int depth,
-            IListActions actionLister, ICreateTree treeCreator, IHeuristic heuristic, 
-            IMinMax minMaxer, IApplyAction actionApplier)
+    public DropTablutClient(String player, String name, int timeout, String ipAddress,
+                            int depth,
+                            IActionHandler actionHandler, ICreateTree treeCreator, IHeuristic heuristic,
+                            IMinMax minMaxer)
             throws UnknownHostException, IOException {
         super(player, name, timeout, ipAddress);
         this.depth = depth;
-        this.actionLister = actionLister;
+        this.actionHandler = actionHandler;
         this.treeCreator = treeCreator;
         this.heuristic = heuristic;
         this.minMaxer = minMaxer;
-        this.actionApplier = actionApplier;
     }
 
 
@@ -82,7 +73,7 @@ public class DropTablutClient extends TablutClient {
                 if (this.getCurrentState().getTurn().equals(myColor)) {
                     System.out.println("Our turn!");
                     
-                    TablutTreeNode tree = treeCreator.generateTree(this.getCurrentState(), depth, actionLister, actionApplier);
+                    TablutTreeNode tree = treeCreator.generateTree(this.getCurrentState(), depth, actionHandler);
                     action = minMaxer.chooseAction(tree, heuristic);
 
                     this.write(action);
@@ -115,17 +106,28 @@ public class DropTablutClient extends TablutClient {
         
         int timeout = 60;
         String address = "localhost";
+        int depth = 3;
 
-        if (args.length ==3){
+        if (args.length >= 2){
             try {
                 timeout=Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
                 System.err.print("Il secondo argomento deve essere un intero");
                 System.exit(-1);
             }
+        }
+        if (args.length >= 3) {
             address=args[2];
         }
-        
+        if (args.length >= 4) {
+            try {
+                depth = Integer.parseInt(args[3]);
+            } catch (NumberFormatException e) {
+                System.err.print("Il secondo argomento deve essere un intero");
+                System.exit(-1);
+            }
+        }
+
         System.out.println("Selected this: " + args[0]);
 
         Turn color = ((args[0].toUpperCase().equals("WHITE")) ? Turn.WHITE : Turn.BLACK);
@@ -135,24 +137,23 @@ public class DropTablutClient extends TablutClient {
             "DropTablut",
             timeout,
             address,
-            3,
-            new ListActions(),
+            depth,
+            new ActionHandler(),
             new TreeCreator(),
             new DropTablutHeuristic(color),
-            new MinMaxAlphaBeta(),
-            new ApplyAction()
+            new MinMaxAlphaBeta()
         );
 
         client.run();
         
 	}
 
-    public IListActions getActionLister() {
-        return this.actionLister;
+    public IActionHandler getActionHandler() {
+        return this.actionHandler;
     }
 
-    public void setActionLister(IListActions actionLister) {
-        this.actionLister = actionLister;
+    public void setActionHandler(IActionHandler actionHandler) {
+        this.actionHandler = actionHandler;
     }
 
     public ICreateTree getTreeCreator() {
@@ -177,14 +178,6 @@ public class DropTablutClient extends TablutClient {
 
     public void setMinMaxer(IMinMax minMaxer) {
         this.minMaxer = minMaxer;
-    }
-
-    public IApplyAction getActionApplier() {
-        return this.actionApplier;
-    }
-
-    public void setActionApplier(IApplyAction actionApplier) {
-        this.actionApplier = actionApplier;
     }
 
     public int getDepth() {

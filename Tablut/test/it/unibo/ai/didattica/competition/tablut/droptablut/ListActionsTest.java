@@ -1,7 +1,7 @@
 package it.unibo.ai.didattica.competition.tablut.droptablut;
 
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
-import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IListActions;
+import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IActionHandler;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,17 +9,16 @@ import it.unibo.ai.didattica.competition.tablut.domain.State;
 import it.unibo.ai.didattica.competition.tablut.domain.State.Turn;
 
 import java.util.List;
-import java.util.Locale;
 
 import static org.junit.Assert.*;
 
 
 public class ListActionsTest {
-	IListActions actionsLister;
+	IActionHandler actionsLister;
 
 	@Before
 	public void before() {
-		actionsLister = new ListActions();
+		actionsLister = new ActionHandler();
 	}
 
 	@Test
