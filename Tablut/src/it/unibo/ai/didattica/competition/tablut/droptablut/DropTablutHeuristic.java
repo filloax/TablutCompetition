@@ -107,11 +107,11 @@ public class DropTablutHeuristic implements IHeuristic {
 
 
     private double getWhiteScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles,float capturePct) {
-        return numBlack * -0.5 + numWhite      + numFreeDirections *  20; //- capturePct * 10; // + numObstacles * -1;
+        return numBlack * -0.5 + numWhite      + numFreeDirections *  20 - capturePct * 5; // + numObstacles * -1;
     }
 
     private double getBlackScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles, float capturePct) {
-        return numBlack *  0.5 + numWhite * -1 + numFreeDirections * -10 + capturePct * 20; // + numObstacles;
+        return numBlack *  0.5 + numWhite * -1 + numFreeDirections * -5 + capturePct * 20; // + numObstacles;
     }
 
     private int countKingObstacles(State state, Direction dir, int kingX, int kingY) {
