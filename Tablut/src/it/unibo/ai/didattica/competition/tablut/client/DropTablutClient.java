@@ -18,25 +18,26 @@ public class DropTablutClient extends TablutClient {
     private IHeuristic heuristic;
     private IMinMax minMaxer;
     private int depth;
+    private int reducedDepthTurns;
+    private int turnCounter;
 
     public static boolean USE_OPT = true;
 
     public DropTablutClient(String player, String name,
                             int depth,
                             IActionHandler actionHandler, ICreateTree treeCreator, IHeuristic heuristic,
-                            IMinMax minMaxer)
+                            IMinMax minMaxer,
+                            int reducedDepthTurns)
             throws UnknownHostException, IOException {
-        super(player, name);
-        this.depth = depth;
-        this.actionHandler = actionHandler;
-        this.treeCreator = treeCreator;
-        this.heuristic = heuristic;
-        this.minMaxer = minMaxer;
+        this(player, name, 60, "localhost",
+                depth, actionHandler, treeCreator, heuristic,
+                minMaxer, reducedDepthTurns);
     }
     public DropTablutClient(String player, String name, int timeout, String ipAddress,
                             int depth,
                             IActionHandler actionHandler, ICreateTree treeCreator, IHeuristic heuristic,
-                            IMinMax minMaxer)
+                            IMinMax minMaxer,
+                            int reducedDepthTurns)
             throws UnknownHostException, IOException {
         super(player, name, timeout, ipAddress);
         this.depth = depth;
@@ -44,6 +45,8 @@ public class DropTablutClient extends TablutClient {
         this.treeCreator = treeCreator;
         this.heuristic = heuristic;
         this.minMaxer = minMaxer;
+        this.reducedDepthTurns = reducedDepthTurns;
+        this.turnCounter = 0;
     }
 
 
@@ -76,13 +79,23 @@ public class DropTablutClient extends TablutClient {
                 if (this.getCurrentState().getTurn().equals(myColor)) {
                     System.out.println("Our turn!");
 
+                    turnCounter++;
+                    System.out.println("Turno numero " + turnCounter);
+
+                    int thisDepth = depth;
+                    if (reducedDepthTurns > 0) {
+                        thisDepth--;
+                        reducedDepthTurns--;
+                    }
+
                     if (minMaxer instanceof MinMaxAlphaBetaOpt) {
                         System.out.println("Using optimized!");
+                        ((MinMaxAlphaBetaOpt) minMaxer).setMaxDepth(thisDepth);
                         TablutTreeNode firstNode = TablutTreeNode.createNoChildren(this.getCurrentState(), null);
                         action = minMaxer.chooseAction(firstNode, heuristic);
                     } else if (minMaxer instanceof MinMaxAlphaBeta) {
                         System.out.println("Using not optimized!");
-                        TablutTreeNode tree = treeCreator.generateTree(this.getCurrentState(), depth, actionHandler);
+                        TablutTreeNode tree = treeCreator.generateTree(this.getCurrentState(), thisDepth, actionHandler);
                         action = minMaxer.chooseAction(tree, heuristic);
                     } else {
                         throw new IllegalStateException("argh");
@@ -98,12 +111,15 @@ public class DropTablutClient extends TablutClient {
                     System.out.println("Waiting for your opponent move... ");
                 } else if (this.getCurrentState().getTurn().equals(myWin)) {
                     System.out.println("YOU WIN!");
+                    System.out.println("In turn num: " + turnCounter);
                     System.exit(0);
                 } else if (this.getCurrentState().getTurn().equals(otherWin)) {
                     System.out.println("YOU LOSE!");
+                    System.out.println("In turn num: " + turnCounter);
                     System.exit(0);
                 } else if (this.getCurrentState().getTurn().equals(StateTablut.Turn.DRAW)) {
                     System.out.println("DRAW!");
+                    System.out.println("In turn num: " + turnCounter);
                     System.exit(0);
                 }
 
@@ -123,7 +139,8 @@ public class DropTablutClient extends TablutClient {
         
         int timeout = 60;
         String address = "localhost";
-        int depth = 3;
+        int depth = 5;
+        int reducedDepthTurns = 0;
 
         if (args.length >= 2){
             try {
@@ -166,7 +183,8 @@ public class DropTablutClient extends TablutClient {
             new ActionHandler(),
             new TreeCreator(),
             new DropTablutHeuristic(color),
-            minmaxer
+            minmaxer,
+            reducedDepthTurns
         );
 
         client.run();

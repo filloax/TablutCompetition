@@ -16,6 +16,7 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
     static boolean DEBUG_PRINT_INNER = false;
 
     public static final double BRANCH_LENGTH_WEIGHT = 0.001;
+    public static final double RANDOM_WEIGHT = 0.00001;
 
     private boolean verbose = DEBUG_MODE && DTConstants.DEBUG_MODE;
     private int debugCounter = 0;
@@ -34,6 +35,7 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
     public Action chooseAction(TablutTreeNode tree, IHeuristic heuristic) {
         if (verbose) {
             System.out.println("Inizio algoritmo alpha-beta...");
+            System.out.println("Profondità: " + maxDepth);
             debugCounter = 0;
         }
 
@@ -115,6 +117,7 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
             double val = heuristic.heuristic(node.getState());
             if (prioritizeShorterBranch)
                 val = val - BRANCH_LENGTH_WEIGHT * depth; // preferisci rami più corti
+//            val = val + (Math.random() * RANDOM_WEIGHT);
             
             if (verbose && (debugCounter % 1000 == 0 || DEBUG_PRINT_ALL) && DEBUG_PRINT_INNER) {
                 System.out.println(String.format("--> %d | Ran heuristic for %s: %f", depth, node, val));
@@ -173,5 +176,21 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
 
     private boolean equalsPrecision(double d1, double d2, double prec) {
         return Math.abs(d1 - d2) < prec;
+    }
+
+    public int getMaxDepth() {
+        return maxDepth;
+    }
+
+    public void setMaxDepth(int maxDepth) {
+        this.maxDepth = maxDepth;
+    }
+
+    public IActionHandler getActionHandler() {
+        return actionHandler;
+    }
+
+    public void setActionHandler(IActionHandler actionHandler) {
+        this.actionHandler = actionHandler;
     }
 }
