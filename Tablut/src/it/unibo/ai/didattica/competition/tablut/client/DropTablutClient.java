@@ -67,16 +67,24 @@ public class DropTablutClient extends TablutClient {
                 // Aspetta stato dal server
                 this.read();
 
+                long timeBefore = System.currentTimeMillis();
+
                 System.out.println("Current state:");
                 System.out.println(this.getCurrentState().toString());
 
                 if (this.getCurrentState().getTurn().equals(myColor)) {
                     System.out.println("Our turn!");
-                    
+
+
                     TablutTreeNode tree = treeCreator.generateTree(this.getCurrentState(), depth, actionHandler);
                     action = minMaxer.chooseAction(tree, heuristic);
 
+                    System.out.println("Mossa scelta: " + action);
+
                     this.write(action);
+
+                    long timeAfter = System.currentTimeMillis();
+                    System.out.println("Tempo impiegato per questo turno: " + ((timeAfter - timeBefore) * 0.001) + "s");
                 } else if (this.getCurrentState().getTurn().equals(otherColor)) {
                     System.out.println("Waiting for your opponent move... ");
                 } else if (this.getCurrentState().getTurn().equals(myWin)) {
