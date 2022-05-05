@@ -97,13 +97,16 @@ public class DropTablutHeuristic implements IHeuristic {
             pct = (board[kingY+1][kingX]==Pawn.BLACK?1:0) *0.50f
                 + (board[kingY-1][kingX]==Pawn.BLACK?1:0) *0.50f
                 + (board[kingY][kingX+1]==Pawn.BLACK?1:0) *0.50f
-                + (board[kingY][kingX-1]==Pawn.BLACK?1:0) *0.50f;
+                + (board[kingY][kingX-1]==Pawn.BLACK?1:0) *0.50f
+                + (DTConstants.citadels.contains(state.getBox(kingY+1, kingX))?1:0) *0.50f
+                + (DTConstants.citadels.contains(state.getBox(kingY-1, kingX))?1:0) *0.50f
+                + (DTConstants.citadels.contains(state.getBox(kingY, kingX+1))?1:0) *0.50f
+                + (DTConstants.citadels.contains(state.getBox(kingY, kingX-1))?1:0) *0.50f
+            ;
         }
                 
         return pct;
     }
-
-
 
 
     private double getWhiteScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles,float capturePct) {

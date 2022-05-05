@@ -137,7 +137,7 @@ public class DropTablutClient extends TablutClient {
 			System.exit(-1);
 		}
         
-        int timeout = 60;
+        int timeout = 59;
         String address = "localhost";
         int depth = 5;
         int reducedDepthTurns = 0;
