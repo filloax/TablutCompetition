@@ -106,8 +106,8 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
         if (verbose) {
             debugCounter++;
             if ((depth <= 1 || debugCounter % 1000 == 0 || DEBUG_PRINT_ALL) && DEBUG_PRINT_INNER) {
-                System.out.println(String.format("%d | Running for node with %d children %s", 
-                    depth, node.getChildren().size(), node.toStringTrace()));
+                System.out.println(String.format("%d | Running for node %s",
+                    depth, node.toStringTrace()));
             }
         }
 
@@ -133,12 +133,12 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
                 double val = minmax(child, depth + 1, false, alpha, beta, heuristic, prioritizeShorterBranch);
                 if (val != bestVal) {
                     bestVal = Math.max(val, bestVal);
-                    if (verbose && (depth <= 1 || debugCounter % 1000 == 0 || DEBUG_PRINT_ALL) && DEBUG_PRINT_INNER) {
-                        System.out.println(String.format("%d | Setting value of node %s to %f", 
-                            depth, node, bestVal));
-                    }
-                    if (val == bestVal && depth == 1) {
+                    if (val == bestVal && depth == 0) {
                         bestNode = child;
+                        if (verbose && debugCounter % 1000 == 0 && DEBUG_PRINT_INNER) {
+                            System.out.println(String.format("%d | Cambiato bestNode a %s (bestVal %f)",
+                                    depth, node, bestVal));
+                        }
                     }
                 }
                 alpha = Math.max(alpha, bestVal);
@@ -155,12 +155,12 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
                 double val = minmax(child, depth + 1, true, alpha, beta, heuristic, prioritizeShorterBranch);
                 if (val != bestVal) {
                     bestVal = Math.min(val, bestVal);
-                    if (verbose && (depth <= 1 || debugCounter % 1000 == 0) && DEBUG_PRINT_INNER) {
-                        System.out.println(String.format("%d | Setting value of node %s to %f", 
-                            depth, node, bestVal));
-                    }
-                    if (val == bestVal && depth == 1) {
+                    if (val == bestVal && depth == 0) {
                         bestNode = child;
+                        if (verbose && debugCounter % 1000 == 0 && DEBUG_PRINT_INNER) {
+                            System.out.println(String.format("%d | Cambiato bestNode a %s (bestVal %f)",
+                                    depth, node, bestVal));
+                        }
                     }
                 }
                 beta = Math.min(beta, bestVal);
