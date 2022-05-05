@@ -48,7 +48,9 @@ public class TablutTreeNode {
     }
 
     public boolean isLeaf() {
-        return this.children.isEmpty();
+        return this.state.getTurn().equals(Turn.BLACKWIN)
+                || this.state.getTurn().equals(Turn.WHITEWIN)
+                || this.state.getTurn().equals(Turn.DRAW);
     }
 
     public boolean hasValue() {

@@ -1,16 +1,15 @@
 package it.unibo.ai.didattica.competition.tablut.droptablut;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
 import it.unibo.ai.didattica.competition.tablut.domain.Action;
+import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IActionHandler;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic;
 import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IMinMax;
 
-public class MinMaxAlphaBeta implements IMinMax {
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
+public class MinMaxAlphaBetaOpt implements IMinMax {
     static boolean DEBUG_MODE = true;
     static boolean DEBUG_PRINT_ALL = true;
     static boolean DEBUG_PRINT_INNER = false;
