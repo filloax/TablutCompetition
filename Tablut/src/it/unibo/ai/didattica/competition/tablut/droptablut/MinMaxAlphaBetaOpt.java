@@ -24,6 +24,7 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
     private int maxDepth;
     private IActionHandler actionHandler;
     private TablutTreeNode bestNode;
+    private boolean running; // per multithreading, visto che java non lascia fermare i thread
 
     public MinMaxAlphaBetaOpt(int maxDepth, IActionHandler actionHandler) {
         this.maxDepth = maxDepth;
@@ -39,14 +40,15 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
             debugCounter = 0;
         }
 
-        /*
-        per ogni figlio del primo nodo:
-            usa alpha beta per trovare il punteggio migliore che ottieni su quella strada
-        
-        */
+        running = true;
         bestNode = null;
         double bestOverall = minmax(tree, 0, true, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, heuristic);
         Action action = null;
+
+        if (!running) {
+            System.err.println("Thread di MinMaxAlphaBetaOpt terminato anticipatamente");
+            return null;
+        }
 
         if (verbose) {
             System.out.println(String.format("Alpha-beta eseguito in %d ricorsioni, bestOverall: %f", debugCounter, bestOverall));
@@ -105,6 +107,12 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
             return bestVal
         */
 
+        // Se dall'esterno è stato chiamato stop,
+        // chiudi ogni ramo il prima possibile
+        if (!running) {
+            return -1;
+        }
+
         if (verbose) {
             debugCounter++;
             if ((depth <= 1 || debugCounter % 1000 == 0 || DEBUG_PRINT_ALL) && DEBUG_PRINT_INNER) {
@@ -134,6 +142,13 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
                 State state = actionHandler.applyAction(node.getState(), action);
                 TablutTreeNode child = TablutTreeNode.createNoChildren(state, action);
                 double val = minmax(child, depth + 1, false, alpha, beta, heuristic, prioritizeShorterBranch);
+
+                // Se dall'esterno è stato chiamato stop,
+                // chiudi ogni ramo il prima possibile
+                if (!running) {
+                    return -1;
+                }
+
                 if (val != bestVal) {
                     bestVal = Math.max(val, bestVal);
                     if (val == bestVal && depth == 0) {
@@ -156,6 +171,13 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
                 State state = actionHandler.applyAction(node.getState(), action);
                 TablutTreeNode child = TablutTreeNode.createNoChildren(state, action);
                 double val = minmax(child, depth + 1, true, alpha, beta, heuristic, prioritizeShorterBranch);
+
+                // Se dall'esterno è stato chiamato stop,
+                // chiudi ogni ramo il prima possibile
+                if (!running) {
+                    return -1;
+                }
+
                 if (val != bestVal) {
                     bestVal = Math.min(val, bestVal);
                     if (val == bestVal && depth == 0) {
@@ -172,6 +194,10 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
             }
             return bestVal;
         }
+    }
+
+    public void stop() {
+        this.running = false;
     }
 
     private boolean equalsPrecision(double d1, double d2, double prec) {

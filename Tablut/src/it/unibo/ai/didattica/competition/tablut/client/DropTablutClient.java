@@ -19,9 +19,11 @@ public class DropTablutClient extends TablutClient {
     private IMinMax minMaxer;
     private int depth;
     private int reducedDepthTurns;
+    private int timeoutTurns;
     private int turnCounter;
 
     public static boolean USE_OPT = true;
+    public static boolean CHECK_FOR_TIMEOUT = true;
 
     public DropTablutClient(String player, String name,
                             int depth,
@@ -47,6 +49,7 @@ public class DropTablutClient extends TablutClient {
         this.minMaxer = minMaxer;
         this.reducedDepthTurns = reducedDepthTurns;
         this.turnCounter = 0;
+        this.timeoutTurns = 0;
     }
 
 
@@ -65,7 +68,7 @@ public class DropTablutClient extends TablutClient {
         Turn myWin = myColor.equals(Turn.WHITE) ? Turn.WHITEWIN : Turn.BLACKWIN;
         Turn otherWin = myColor.equals(Turn.WHITE) ? Turn.BLACKWIN : Turn.WHITEWIN;
 
-        System.out.println("You are player " + myColor.toString() + "!");
+        System.out.println("You are player " + myColor.toString() + ", timeout is " + timeout + "!");
         while (true) {
             try {
                 // Aspetta stato dal server
@@ -89,12 +92,70 @@ public class DropTablutClient extends TablutClient {
                     }
 
                     if (minMaxer instanceof MinMaxAlphaBetaOpt) {
-                        System.out.println("Using optimized!");
+                        if (DTConstants.DEBUG_MODE) {
+                            System.out.println("Using optimized!");
+                        }
+
                         ((MinMaxAlphaBetaOpt) minMaxer).setMaxDepth(thisDepth);
                         TablutTreeNode firstNode = TablutTreeNode.createNoChildren(this.getCurrentState(), null);
-                        action = minMaxer.chooseAction(firstNode, heuristic);
+
+                        if (CHECK_FOR_TIMEOUT) {
+                            MinMaxerThread thread = new MinMaxerThread(firstNode, minMaxer, heuristic);
+                            thread.start();
+
+                            action = null;
+
+                            // Aspetta al massimo 85% del timeout (che è in secondi)
+                            while (System.currentTimeMillis() - timeBefore < timeout * 0.85 * 1000) {
+                                try {
+                                    Thread.sleep(500);
+                                    if (!thread.isAlive()) {
+                                        if (DTConstants.DEBUG_MODE) {
+                                            System.out.println("Trovato risultato durante il check di tempo massimo!");
+                                        }
+                                        // Esecuzione terminata entro il tempo limite, salva azione
+                                        action = thread.getResult();
+                                        break;
+                                    }
+
+                                } catch(InterruptedException e) {
+                                    e.printStackTrace();
+                                    break;
+                                }
+                            }
+
+                            // Azione trovata, resetta counter di turni di timeout di fila
+                            if (action != null) {
+                                timeoutTurns = 0;
+                            } else {
+                                // Ferma il minmaxer, impostando la flag interna a false
+                                ((MinMaxAlphaBetaOpt) minMaxer).stop();
+
+                                System.err.println(String.format("Avvicinato troppo al timeout dopo %.2fs (o altro errore), provo a depth bassa (3)",
+                                        (System.currentTimeMillis() - timeBefore) * 0.001f));
+                                ((MinMaxAlphaBetaOpt) minMaxer).setMaxDepth(3);
+                                action = minMaxer.chooseAction(firstNode, heuristic);
+
+                                if (timeoutTurns >= 3) {
+                                    if (depth > 3) {
+                                        System.err.println("Avvicinato troppo al timeout 3 volte, riduco depth permanentemente");
+                                        ((MinMaxAlphaBetaOpt) minMaxer).setMaxDepth(3);
+                                        depth--;
+                                    } else {
+                                        System.err.println("Non posso abbassare la depth, è già troppo bassa (3)!");
+                                    }
+                                } else {
+                                    timeoutTurns++;
+                                }
+                            }
+                        } else {
+                            action = minMaxer.chooseAction(firstNode, heuristic);
+                        }
                     } else if (minMaxer instanceof MinMaxAlphaBeta) {
-                        System.out.println("Using not optimized!");
+                        if (DTConstants.DEBUG_MODE) {
+                            System.out.println("Using not optimized!");
+                        }
+
                         TablutTreeNode tree = treeCreator.generateTree(this.getCurrentState(), thisDepth, actionHandler);
                         action = minMaxer.chooseAction(tree, heuristic);
                     } else {
@@ -137,7 +198,7 @@ public class DropTablutClient extends TablutClient {
 			System.exit(-1);
 		}
         
-        int timeout = 59;
+        int timeout = 60;
         String address = "localhost";
         int depth = 5;
         int reducedDepthTurns = 0;
@@ -231,4 +292,26 @@ public class DropTablutClient extends TablutClient {
         this.depth = depth;
     }
 
+    private class MinMaxerThread extends Thread {
+        TablutTreeNode tree;
+        IMinMax minmaxer;
+        IHeuristic heuristic;
+        Action result;
+
+        public MinMaxerThread(TablutTreeNode tree, IMinMax minmaxer, IHeuristic heuristic) {
+            this.tree = tree;
+            this.minmaxer = minmaxer;
+            this.heuristic = heuristic;
+            this.result = null;
+        }
+
+        @Override
+        public void run() {
+            result = minmaxer.chooseAction(tree, heuristic);
+        }
+
+        public Action getResult() {
+            return result;
+        }
+    }
 }
