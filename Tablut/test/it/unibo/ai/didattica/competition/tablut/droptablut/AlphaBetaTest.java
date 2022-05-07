@@ -37,7 +37,7 @@ public class AlphaBetaTest {
 
         heuristic = new IHeuristic() {
             @Override
-            public double heuristic(State state) {
+            public float heuristic(State state) {
                 return stateHeuristicMap.get(state);
             }
         };

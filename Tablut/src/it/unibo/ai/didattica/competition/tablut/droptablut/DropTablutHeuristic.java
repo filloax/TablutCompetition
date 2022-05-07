@@ -14,7 +14,7 @@ public class DropTablutHeuristic implements IHeuristic {
 
 
     @Override
-    public double heuristic(State state) {
+    public float heuristic(State state) {
         Turn turn = state.getTurn();
         if (turn.equals(Turn.BLACKWIN)) {
             if (isWhite) {
@@ -118,12 +118,12 @@ public class DropTablutHeuristic implements IHeuristic {
     }
 
 
-    private double getWhiteScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles,float capturePct) {
-        return numBlack * -0.5 + numWhite      + numFreeDirections * 20 + capturePct * -5; // + numObstacles * -1;
+    private float getWhiteScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles, float capturePct) {
+        return numBlack * -0.5f + numWhite      + numFreeDirections * 20 + capturePct * -5; // + numObstacles * -1;
     }
 
-    private double getBlackScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles, float capturePct) {
-        return numBlack *  0.9 + numWhite * -1 + numFreeDirections * -5 + capturePct * 20; // + numObstacles;
+    private float getBlackScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles, float capturePct) {
+        return numBlack *  0.9f + numWhite * -1 + numFreeDirections * -5 + capturePct * 20; // + numObstacles;
     }
 
     private int countKingObstacles(State state, Direction dir, int kingX, int kingY) {
