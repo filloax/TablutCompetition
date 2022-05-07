@@ -8,10 +8,12 @@ import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IHeuristic
 public class DropTablutHeuristic implements IHeuristic {
     private boolean isWhite;
 
+    public static final int WHITE_START_NUM = 8;
+    public static final int BLACK_START_NUM = 16;
+
     public DropTablutHeuristic(Turn color) {
         this.isWhite = color.equals(Turn.WHITE);
     }
-
 
     @Override
     public float heuristic(State state) {
@@ -64,17 +66,18 @@ public class DropTablutHeuristic implements IHeuristic {
                 numFreeDirections++;
             }
         }
-        float capturePct = calcPct(kingX,kingY,state);
-
+        float kingCapturePct = calcKingCapturePct(kingX,kingY,state);
+        float pctWhite = numWhite / (float) WHITE_START_NUM;
+        float pctBlack = numBlack / (float) BLACK_START_NUM;
 
         if (isWhite) {
-            return getWhiteScore(numWhite, numBlack, numFreeDirections, numObstacles, capturePct);
+            return getWhiteScore(pctWhite, 1 - pctBlack, numFreeDirections, numObstacles, kingCapturePct);
         } else {
-            return getBlackScore(numWhite, numBlack, numFreeDirections, numObstacles, capturePct);
+            return getBlackScore(pctBlack, 1 - pctWhite, numFreeDirections, numObstacles, kingCapturePct);
         }
     }
 
-    private float calcPct(int kingX, int kingY,State state) {
+    private float calcKingCapturePct(int kingX, int kingY, State state) {
         float pct;
         Pawn board[][] = state.getBoard();
 
@@ -117,12 +120,12 @@ public class DropTablutHeuristic implements IHeuristic {
     }
 
 
-    private float getWhiteScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles, float capturePct) {
-        return numBlack * -0.5f + numWhite      + numFreeDirections * 20 + capturePct * -5; // + numObstacles * -1;
+    private float getWhiteScore(float livingOursPct, float eatenTheirsPct, int numFreeDirections, int numObstacles, float kingCapturePct) {
+        return livingOursPct * 25 + eatenTheirsPct * 20 + numFreeDirections *  20 + kingCapturePct * -5; // + numObstacles * -1;
     }
 
-    private float getBlackScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles, float capturePct) {
-        return numBlack *  0.9f + numWhite * -1 + numFreeDirections * -5 + capturePct * 20; // + numObstacles;
+    private float getBlackScore(float livingOursPct, float eatenTheirsPct, int numFreeDirections, int numObstacles, float kingCapturePct) {
+        return livingOursPct * 20 + eatenTheirsPct * 25 + numFreeDirections * -20 + kingCapturePct * 20; // + numObstacles;
     }
 
     private int countKingObstacles(State state, Direction dir, int kingX, int kingY) {
