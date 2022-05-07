@@ -22,7 +22,7 @@ public class DropTablutClient extends TablutClient {
     private int timeoutTurns;
     private int turnCounter;
 
-    public static boolean USE_OPT = false;
+    public static boolean USE_OPT = true;
     public static boolean CHECK_FOR_TIMEOUT = true;
 
     public DropTablutClient(String player, String name,
