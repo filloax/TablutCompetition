@@ -57,7 +57,7 @@ public class MinMaxAlphaBetaOpt implements IMinMax {
 
         if (bestNode != null) {
             action = bestNode.getAction();
-            System.out.println(String.format("Scelta azione con punteggio %f: %s -> %s", bestOverall, action.getFrom(), action.getTo()));
+            System.out.println(String.format("(%d) Scelta azione con punteggio %f: %s -> %s", maxDepth, bestOverall, action.getFrom(), action.getTo()));
         }
 
         if (action == null) {
