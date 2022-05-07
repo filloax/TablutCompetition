@@ -76,32 +76,41 @@ public class DropTablutHeuristic implements IHeuristic {
 
     private float calcPct(int kingX, int kingY,State state) {
         float pct=0.0f;
+        float citadelWeight = 0.5f;
         Pawn board[][] = state.getBoard();
 
         if(board[kingY][kingX] == Pawn.THRONE){ //sul trono
-            pct = (board[kingY+1][kingX]==Pawn.BLACK?1:0) *0.25f
-                + (board[kingY-1][kingX]==Pawn.BLACK?1:0) *0.25f
-                + (board[kingY][kingX+1]==Pawn.BLACK?1:0) *0.25f
-                + (board[kingY][kingX-1]==Pawn.BLACK?1:0) *0.25f;
+            pct = (
+                    (board[kingY+1][kingX]==Pawn.BLACK?1:0)
+                    + (board[kingY-1][kingX]==Pawn.BLACK?1:0)
+                    + (board[kingY][kingX+1]==Pawn.BLACK?1:0)
+                    + (board[kingY][kingX-1]==Pawn.BLACK?1:0)
+                ) * 0.25f;
         }
         else if(board[kingY+1][kingX]==Pawn.THRONE ||
                 board[kingY-1][kingX]==Pawn.THRONE ||
                 board[kingY][kingX+1]==Pawn.THRONE ||
                 board[kingY][kingX-1]==Pawn.THRONE){ //adiacente al trono
-            pct = (board[kingY+1][kingX]==Pawn.BLACK?1:0) *0.33f
-                + (board[kingY-1][kingX]==Pawn.BLACK?1:0) *0.33f
-                + (board[kingY][kingX+1]==Pawn.BLACK?1:0) *0.33f
-                + (board[kingY][kingX-1]==Pawn.BLACK?1:0) *0.33f;
+            pct = (
+                    (board[kingY+1][kingX]==Pawn.BLACK?1:0)
+                    + (board[kingY-1][kingX]==Pawn.BLACK?1:0)
+                    + (board[kingY][kingX+1]==Pawn.BLACK?1:0)
+                    + (board[kingY][kingX-1]==Pawn.BLACK?1:0)
+                ) *0.33f;
         }
         else { //non adiacente al trono
-            pct = (board[kingY+1][kingX]==Pawn.BLACK?1:0) *0.50f
-                + (board[kingY-1][kingX]==Pawn.BLACK?1:0) *0.50f
-                + (board[kingY][kingX+1]==Pawn.BLACK?1:0) *0.50f
-                + (board[kingY][kingX-1]==Pawn.BLACK?1:0) *0.50f
-                + (DTConstants.citadels.contains(state.getBox(kingY+1, kingX))?1:0) *0.50f
-                + (DTConstants.citadels.contains(state.getBox(kingY-1, kingX))?1:0) *0.50f
-                + (DTConstants.citadels.contains(state.getBox(kingY, kingX+1))?1:0) *0.50f
-                + (DTConstants.citadels.contains(state.getBox(kingY, kingX-1))?1:0) *0.50f
+            pct = (
+                    (board[kingY+1][kingX]==Pawn.BLACK?1:0)
+                    + (board[kingY-1][kingX]==Pawn.BLACK?1:0)
+                    + (board[kingY][kingX+1]==Pawn.BLACK?1:0)
+                    + (board[kingY][kingX-1]==Pawn.BLACK?1:0)
+                ) * 0.5f
+                + (
+                    (DTConstants.citadels.contains(state.getBox(kingY+1, kingX))?1:0)
+                    + (DTConstants.citadels.contains(state.getBox(kingY-1, kingX))?1:0)
+                    + (DTConstants.citadels.contains(state.getBox(kingY, kingX+1))?1:0)
+                    + (DTConstants.citadels.contains(state.getBox(kingY, kingX-1))?1:0)
+                ) * 0.5f * citadelWeight;
             ;
         }
                 
@@ -114,7 +123,7 @@ public class DropTablutHeuristic implements IHeuristic {
     }
 
     private double getBlackScore(int numWhite, int numBlack, int numFreeDirections, int numObstacles, float capturePct) {
-        return numBlack *  0.5 + numWhite * -1 + numFreeDirections * -5 + capturePct * 20; // + numObstacles;
+        return numBlack *  0.9 + numWhite * -1 + numFreeDirections * -5 + capturePct * 20; // + numObstacles;
     }
 
     private int countKingObstacles(State state, Direction dir, int kingX, int kingY) {
