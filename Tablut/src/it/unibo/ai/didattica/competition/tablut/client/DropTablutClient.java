@@ -163,7 +163,7 @@ public class DropTablutClient extends TablutClient {
                         throw new IllegalStateException("argh");
                     }
 
-                    System.out.println("Mossa scelta: " + action + ", tentato a profondità " + thisDepth);
+                    System.out.println("Mossa scelta: " + action + ", tentato a profondita' " + thisDepth);
 
                     this.write(action);
 
