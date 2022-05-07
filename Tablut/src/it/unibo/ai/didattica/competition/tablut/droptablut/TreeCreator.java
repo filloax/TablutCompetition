@@ -10,7 +10,7 @@ import it.unibo.ai.didattica.competition.tablut.droptablut.interfaces.IActionHan
 
 
 public class TreeCreator implements ICreateTree {
-    private static final boolean DEBUG_MODE = true;
+    private static final boolean DEBUG_MODE = false;
 
     private int debugCounter = 0;
     private boolean verbose = DEBUG_MODE && DTConstants.DEBUG_MODE;
