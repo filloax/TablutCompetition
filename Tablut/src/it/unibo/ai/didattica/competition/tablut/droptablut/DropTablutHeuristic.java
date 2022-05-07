@@ -75,8 +75,7 @@ public class DropTablutHeuristic implements IHeuristic {
     }
 
     private float calcPct(int kingX, int kingY,State state) {
-        float pct=0.0f;
-        float citadelWeight = 0.5f;
+        float pct;
         Pawn board[][] = state.getBoard();
 
         if(board[kingY][kingX] == Pawn.THRONE){ //sul trono
@@ -110,7 +109,7 @@ public class DropTablutHeuristic implements IHeuristic {
                     + (DTConstants.citadels.contains(state.getBox(kingY-1, kingX))?1:0)
                     + (DTConstants.citadels.contains(state.getBox(kingY, kingX+1))?1:0)
                     + (DTConstants.citadels.contains(state.getBox(kingY, kingX-1))?1:0)
-                ) * 0.5f * citadelWeight;
+                ) * 0.5f;
             ;
         }
                 
