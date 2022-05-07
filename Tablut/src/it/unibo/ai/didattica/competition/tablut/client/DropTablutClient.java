@@ -133,17 +133,18 @@ public class DropTablutClient extends TablutClient {
 
                                 System.err.println(String.format("Avvicinato troppo al timeout dopo %.2fs (o altro errore), provo a depth bassa (3)",
                                         (System.currentTimeMillis() - timeBefore) * 0.001f));
+
                                 ((MinMaxAlphaBetaOpt) minMaxer).setMaxDepth(3);
                                 action = minMaxer.chooseAction(firstNode, heuristic);
 
                                 if (timeoutTurns >= 3) {
                                     if (depth > 3) {
                                         System.err.println("Avvicinato troppo al timeout 3 volte, riduco depth permanentemente");
-                                        ((MinMaxAlphaBetaOpt) minMaxer).setMaxDepth(3);
                                         depth--;
                                     } else {
                                         System.err.println("Non posso abbassare la depth, è già troppo bassa (3)!");
                                     }
+                                    timeoutTurns = 0;
                                 } else {
                                     timeoutTurns++;
                                 }
