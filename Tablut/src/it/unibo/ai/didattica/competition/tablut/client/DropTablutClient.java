@@ -163,7 +163,7 @@ public class DropTablutClient extends TablutClient {
                         throw new IllegalStateException("argh");
                     }
 
-                    System.out.println("Mossa scelta: " + action);
+                    System.out.println("Mossa scelta: " + action + ", tentato a profondità " + thisDepth);
 
                     this.write(action);
 
@@ -201,8 +201,8 @@ public class DropTablutClient extends TablutClient {
         
         int timeout = 60;
         String address = "localhost";
-        int depth = 5;
-        int reducedDepthTurns = 0;
+        int depth = 6;
+        int reducedDepthTurns = 10;
 
         if (args.length >= 2){
             try {
